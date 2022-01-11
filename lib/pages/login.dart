@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
@@ -14,12 +15,62 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 String? pinSelected="";
+
 class _LoginState extends State<Login> {
   TextEditingController textEditingController = new TextEditingController();
-  @override
+  List<String> catagory = ['Choose User', 'User111', 'User222', 'User333', 'User333' , 'User444'];
+  String _selectedGatagory = 'Choose User';
+  
+  dialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 200,
+            width: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text("Users", textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.grey),),
+                DropdownButton(
+            hint: Text('Choose User'), // Not necessary for Option 1
+            value: _selectedGatagory,
+            onChanged: (newValue) {
+              setState(() {
+                _selectedGatagory = newValue.toString();
+              });
+            },
+            items: catagory.map((catagory) {
+              return DropdownMenuItem(
+                enabled: true,
+                child:  Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(catagory),
+                ),
+                value: catagory,
+              );
+            }).toList(),
+          ),
+                TextButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+                    },
+                    child: Text("Ok", textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.blue),)),
+               
+              ],
+            ),
+          ),
+        );
+      },
+      
+    );
+  }
+ 
   Widget build(BuildContext context) {
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         title: Text("user111",
@@ -50,7 +101,9 @@ class _LoginState extends State<Login> {
           Padding(
             padding: const EdgeInsets.only(right: 70),
             child: TextButton(
-              onPressed: () {},
+              onPressed: (){
+                // dialog();
+              },
               child: Center(
                   child: Text(
                     "Change user",
