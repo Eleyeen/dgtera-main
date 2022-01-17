@@ -21,6 +21,7 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
+  final List<String> tabs = ["Sales Report" , "Sales Report Summary" , "Product Mix" , "Product Mix" , " Product Mix" , "Product Void" ,"Product Waste","Product Return" , "Stock Report" , "Report" , "Sales Report Summary" , "Sales Report Summary" ,];
   int selectedIndex = 0;
   PageController pageController = new PageController();
   @override
@@ -85,7 +86,14 @@ class _ReportScreenState extends State<ReportScreen> {
                           : Colors.white,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Tab $index"),
+                        child: Text(tabs[index],
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "Raleway",
+                          fontWeight: FontWeight.bold
+                        ),
+                        
+                        ),
                       ),
                     ),
                   );

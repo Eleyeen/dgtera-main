@@ -7,4 +7,5 @@ class MyRoutes {
   static var history = "/history";
   static var product = "/product";
   static var password = "/password";
+  static var setting = "/password";
 }

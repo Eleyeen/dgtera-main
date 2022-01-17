@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardDetail.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customer.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customerTable.dart';
@@ -46,7 +48,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
     double? totalprice=0;
     selectedItems.forEach((element) {
       setState(() {
-        totalprice = totalprice! + element.foodPrice!;
+        totalprice =totalprice! + element.foodPrice!;
       });
     });
     return totalprice;
@@ -72,17 +74,76 @@ class _PayNowScreenState extends State<PayNowScreen> {
             width: MediaQuery.of(context).size.width / 3,
             child: Column(
               children: [
-                CustomerTable(),
+                // CustomerTable(),
+                    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => Customer()));
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                BorderRadius.all(Radius.circular(8))),
+            width: 210,
+            height: 45,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.person_rounded),
+                  SizedBox(width: 8),
+                  Text("Costumer Name"),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        GestureDetector(
+          onTap: (){
+            // Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            width: 210,
+            height: 45,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.table_chart),
+                  SizedBox(width: 8),
+                  Text("Points [99]"),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+ 
                 SizedBox(
                   height: 8,
                 ),
                 DateAndTime(),
+                SizedBox(
+                  height: 8,
+                ),
                 Expanded(child:CardDetail()),
                 TotleDetail(),
-                SizedBox(height: 20,),
-
-                SizedBox(height: 20,),
-                PayButton(),
+                // SizedBox(height: 20,),
+                // PayButton(),
               ],
             ),
           ),
@@ -122,68 +183,135 @@ class _PayNowScreenState extends State<PayNowScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                                height: 60,
-                                width: 190,
-                                // color: Colors.white,
-                                decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
-                                child: TextField(
-                                  controller: cashpriceController,
-                                  decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
-                                              color: Colors.black,
-                                              width: 2),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        labelStyle: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.black),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontSize: 15),
-                                        // icon: Icon(Icons.mail),                                          
-                                        hintText: 'Enter Cash Amount',
-                                        labelText: 'Cash',
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
-                                              color: Colors.grey.shade900,
-                                              width: 2),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                  height: 60,
+                                  // width: MediaQuery.of(context).size.width/4.3,
+                                  // color: Colors.white,
+                                  decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(16)),
+                                  child: TextField(
+                                    controller: cashpriceController,
+                                    decoration: InputDecoration(
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                                color: Colors.black,
+                                                width: 2),
+                                          ),
+                                          focusedBorder:OutlineInputBorder(
+                                            borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          labelStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey.shade700,
+                                              fontSize: 15),
+                                          // icon: Icon(Icons.mail),                                          
+                                          hintText: 'Enter Cash Amount',
+                                          labelText: 'Cash',
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                                color: Colors.grey.shade900,
+                                                width: 2),
+                            
+                                          )),
+                                            style:TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          keyboardType:TextInputType.number,
+                               
+                                  )),
+                            ),
+                      
+                            
 
-                                        )),
-                                          style:TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        keyboardType:TextInputType.number,
-   
-                                )),
                             SizedBox(
                               width: 10,
                             ),
+
+                            Expanded(
+                              child: Container(
+                                  height: 60,
+                                  // width: MediaQuery.of(context).size.width/4.3,
+                              
+                                  decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(16)),
+                                  child: TextField(
+                                    controller: creditpriceController,
+                                   decoration: InputDecoration(
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                                color: Colors.black,
+                                                width: 2),
+                                          ),
+                                          focusedBorder:OutlineInputBorder(
+                                            borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          labelStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey.shade700,
+                                              fontSize: 15),
+                                          // icon: Icon(Icons.mail),                                          
+                                          hintText: 'Enter Credit Amount',
+                                          labelText: 'Credit',
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            borderSide: BorderSide(
+                                                color: Colors.grey.shade900,
+                                                width: 2),
+                                          )),
+                                           style:TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          keyboardType:TextInputType.number,
+                               
                             
-                            Container(
-                                height: 60,
-                                width: 190,
+                                  )),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    children: [
+                               Container(
+                                height: 70,
+                                // width: 190,
                                 // color: Colors.white,
                                 decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius: BorderRadius.circular(16)),
                                 child: TextField(
-                                  controller: splitinController,
+                                  maxLines: 2,
+                               controller: splitinController,
                                   // decoration: InputDecoration(
                                   //     hintText: "  No of persons",
                                   //     border: InputBorder.none),
 
                                 decoration: InputDecoration(
+                                  isDense: false,
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(16),
@@ -211,81 +339,22 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                               color: Colors.grey.shade900,
                                               width: 2),
                                         )),
- style:TextStyle(
+                                          style:TextStyle(
                                           color: Colors.black,
                                         ),
                                         keyboardType:TextInputType.number,
    
                                 )),
-                            SizedBox(
-                              width: 10,
-                            ),
-
-                            Container(
-                                height: 60,
-                                width: 190,
-                            
-                                decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
-                                child: TextField(
-                                  controller: creditpriceController,
-                                 decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
-                                              color: Colors.black,
-                                              width: 2),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        labelStyle: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.black),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontSize: 15),
-                                        // icon: Icon(Icons.mail),                                          
-                                        hintText: 'Enter Cradit Amount',
-                                        labelText: 'Cradit',
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
-                                              color: Colors.grey.shade900,
-                                              width: 2),
-                                        )),
-                                         style:TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        keyboardType:TextInputType.number,
-   
-
-                                )),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    children: [
+                                    SizedBox(height:8),
                                         Container(
-      // width: 300,                    
+                       
                                         height: 70,
                                         decoration: BoxDecoration(
 
                                             color: Colors.white,
                                             borderRadius: BorderRadius.circular(16)),
                                         child: TextField(
+                                          maxLines: 2,
                                     controller: voucherController,
                                   decoration: InputDecoration(
                                           enabledBorder: OutlineInputBorder(
@@ -320,28 +389,28 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                           ),
                                           keyboardType:TextInputType.number,
                                   ),
-    ),
-    SizedBox(height:8),
+                                    ),
+                                    SizedBox(height:8),
                                                       
-                                      payNowBox(
-                                          "walk-in customer", Icons.people),
+                                      GestureDetector(
+                                        onTap: (){
+                                          dialogBox();
+                                        },
+                                        child: payNowBox(
+                                            "Reedem Points", Icons.point_of_sale),
+                                      ),
                                       SizedBox(
                                         height: 8,
                                       ),
-                                      payNowBox(
-                                          "Voucher", Icons.view_day_outlined),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      payNowBox("Lead team", Icons.group),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
+                                      // payNowBox("Lead team", Icons.group),
+                                      // SizedBox(
+                                      //   height: 8,
+                                      // ),
                                       payNowBox("Note", Icons.note_add),
                                       SizedBox(
                                         height: 8,
                                       ),
-                                      payNowBox("invoice", Icons.inventory_2),
+                                      payNowBox("Discount", Icons.disc_full_outlined),
                                       SizedBox(
                                         height: 8,
                                       ),
@@ -427,27 +496,36 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                           SizedBox(
                                         height: 8,
                                       ),
-                                      Container(
-                                          width: MediaQuery.of(context)
-                                              .size
-                                              .width,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                              color: Colors.blue[100],
-                                              borderRadius:
-                                              BorderRadius.circular(16)),
-                                          child: Center(
-                                            child: Text(
-                                              "Order",
-                                              style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 25,
-                                                  fontWeight:FontWeight.bold,)
-                                            ),
-                                          ))
-                                    ]))
+                                      
+                                    ])),
+                                  
                               ],
-                            ))
+                            )
+                            ),
+                              GestureDetector(
+                                onTap: (){
+                                  dialogBox3();
+                                },
+                                child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                                color: Colors.blue[100],
+                                                borderRadius:
+                                                BorderRadius.circular(16)),
+                                            child: Center(
+                                              child: Text(
+                                                "Order Now",
+                                                style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 25,
+                                                    fontWeight:FontWeight.bold,)
+                                              ),
+                                            )),
+                              )
+ 
                       ],
                     ),
                   ),
@@ -699,4 +777,106 @@ class _PayNowScreenState extends State<PayNowScreen> {
       context: context,
     );
   }
+
+  void dialogBox() {
+    showDialog(
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 200,
+            width: 300,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  "Are You Sure You Want to Reedem",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                ),
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                  TextButton(
+                        child: Text('No'),
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: Colors.blue[300],
+                          onSurface: Colors.grey,
+                        ),
+                        onPressed: () {
+                          print('Pressed');
+                        },
+                      ),
+                      
+                                      TextButton(
+                        child: Text('Yes'),
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: Colors.blue[300],
+                          onSurface: Colors.grey,
+                        ),
+                        onPressed: () {
+                          print('Pressed');
+                        },
+                      )
+                  ],
+                ),
+                
+
+              ],
+            ),
+          ),
+        );
+      },
+      context: context,
+    );
+  }
+
+ void dialogBox3() {
+    showDialog(
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 200,
+            width: 300,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  "Order placed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                ),
+                
+                TextButton(
+                      child: Text('OK'),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: Colors.blue[300],
+                        onSurface: Colors.grey,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                
+
+              ],
+            ),
+          ),
+        );
+      },
+      context: context,
+    );
+  }
+
 }
+
+

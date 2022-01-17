@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dgtera_tablet_app/reusmeShiftPage/modle/shiftItemsModle.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardScreen.dart';
@@ -29,8 +31,8 @@ class _ProductState extends State<Product> {
   List<double> foodprice = [
     100, 190, 200, 50, 230, 170, 100, 50, 25, 30, 100, 190, 200, 50, 230, 170, 100, 50, 25, 30, 100, 190, 200, 50, 230, 170, 100, 50, 25, 30,
   ];
- List<String> catagory = ['Please choose a catagory', 'Food', 'Fruits', 'Halwa', 'Vegitable' , 'Fast food'];
- String _selectedGatagory = 'Please choose a catagory';
+ List<String> catagory = [ 'Please choose a Catagory','Food', 'Fruits', 'Halwa', 'Vegitable' , 'Fast food'];
+ String _selectedGatagory = 'Please choose a Catagory';
   @override
   Widget build(BuildContext context) {
 
@@ -129,7 +131,7 @@ class _ProductState extends State<Product> {
                       onTap: () {
                         //add in the list
                         setState(() {
-                          selectedItems.add(Item(foodName: foodnames[index],foodPrice: foodprice[index],x: 1,note: "",dis: 0,size: "small"));
+                          selectedItems.add(Item(foodName: foodnames[index],foodPrice: foodprice[index] ,x: 1,note: "",dis: 0,size: "small",totlePrice: foodprice[index] ));
                         });
                         Navigator.push(context, MaterialPageRoute(builder: (builder)=>ResumeScreen()));
                       },
@@ -171,7 +173,7 @@ class _ProductState extends State<Product> {
                               CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  foodprice[index].toString(),
+                                  foodprice[index].toString()+"/pcs",
                                   style: TextStyle(
                                       fontFamily: 'Raleway',
                                       fontWeight: FontWeight.bold,
@@ -180,7 +182,7 @@ class _ProductState extends State<Product> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  "2",
+                                  "Stock:2",
                                   style: TextStyle(
                                       fontFamily: 'Raleway',
                                       fontWeight: FontWeight.bold,

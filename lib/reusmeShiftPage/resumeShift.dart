@@ -1,18 +1,23 @@
+
+import 'package:flutter/material.dart';
+
+import 'package:dgtera_tablet_app/reusmeShiftPage/modle/shiftItemsModle.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardDetail.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customer.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customerTable.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/dateAndTime.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payButton.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payNow.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/product.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/table.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.dart';
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
-import 'package:flutter/material.dart';
 
 class ResumeScreen extends StatefulWidget {
+  Item? item;
+  ResumeScreen({
+    Key? key,
+    this.item,
+  }) : super(key: key);
   @override
   _ResumeScreenState createState() => _ResumeScreenState();
 }
@@ -67,49 +72,23 @@ class _ResumeScreenState extends State<ResumeScreen> {
               children: [
                 CustomerTable(),
                 SizedBox(
-                  height: 8,
+                  height: 6,
                 ),
                 DateAndTime(),
-                SizedBox(height: 10,),
+                SizedBox(height: 6,),
+                
+                
                 Expanded(child: CardDetail()),
                 TotleDetail(),
-                SizedBox(height: 20,),
-
-                // Row(
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     Text("Voucher",
-                //         style: TextStyle(
-                //             color: Colors.black, fontSize: 17)),
-                //     SizedBox(width: 10),
-                //     Container(
-                //         height: 40,
-                //         width: 230,
-                //         color: Colors.white,
-                //         child: Padding(
-                //           padding:
-                //           const EdgeInsets.only(left: 8.0),
-                //           child: TextField(
-
-                //             decoration: InputDecoration(
-                //                 hintText: "  Enter voucher",
-                //                 border: InputBorder.none),
-                //           ),
-                //         )),
-                //   ],
-                // ),
-  
-                SizedBox(height: 20,),
-
+                SizedBox(height: 6,),
                 PayButton(),
               ],
             ),
           ),
         ),
-        SizedBox(
-          width: 8,
-        ),
+        // SizedBox(
+        //   width: 8,
+        // ),
         Expanded(child: Product())
       ],
     );

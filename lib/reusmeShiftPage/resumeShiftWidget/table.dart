@@ -10,6 +10,7 @@ class TableWidget extends StatefulWidget {
 }
 
 class _TableWidgetState extends State<TableWidget> {
+  String dropdownValue = 'Floor One';
   int selectedIndex = 0;
   PageController pageController = new PageController();
   @override
@@ -30,7 +31,7 @@ class _TableWidgetState extends State<TableWidget> {
                       child: Row(
                         children: [
                           Container(
-                            width: MediaQuery.of(context).size.width / 1.35,
+                            width: MediaQuery.of(context).size.width / 1.75,
                             // height: 80,
                             decoration: BoxDecoration(
                                 color: Colors.grey[500],
@@ -40,12 +41,49 @@ class _TableWidgetState extends State<TableWidget> {
                                 child: Text(
                               "Floor OUTDOOR",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
+                                  color: Colors.black,                                  fontSize: 20,
                                   fontWeight: FontWeight.bold),
                             )),
                           ),
+ 
                           SizedBox(
+                            width: 8,
+                          ),
+                                                    Container(
+                            width: 200,
+                            // height: 80,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[500],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            child: Center(
+                                child: DropdownButton<String>(
+      value: dropdownValue,
+      icon: Icon(Icons.arrow_downward,color: Colors.black,),
+      elevation: 16,
+      style:  TextStyle(color: Colors.black,
+      fontSize: 20,
+      fontWeight:FontWeight.bold,
+           ),
+      underline: Container(
+        height: 3,
+        color: Colors.blue,
+      ),
+      onChanged: (String? newValue) {
+        setState(() {
+          dropdownValue = newValue!;
+        });
+      },
+      items: <String>['Floor One', 'Floor Two', 'Floor three', 'Floor Four']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    ),),
+                          ),
+                            SizedBox(
                             width: 8,
                           ),
                           Expanded(
@@ -74,22 +112,27 @@ class _TableWidgetState extends State<TableWidget> {
                             ),
                           ),
                           SizedBox(width: 8,),
-                          Expanded(
-                            child: Container(
-                                width: 150,
-                                // height: 80,
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: Center(
-                                    child: Text(
-                                  "Close",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ))),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.pop(context);
+                            },
+                            child: Expanded(
+                              child: Container(
+                                  width: 150,
+                                  // height: 80,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10))),
+                                  child: Center(
+                                      child: Text(
+                                    "Close",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ))),
+                            ),
                           ),
                         ],
                       ),

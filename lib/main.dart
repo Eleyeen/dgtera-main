@@ -1,4 +1,5 @@
 import 'package:dgtera_tablet_app/pages/pincode.dart';
+import 'package:dgtera_tablet_app/pages/setting.dart';
 import 'package:dgtera_tablet_app/product/allProducts.dart';
 import 'package:dgtera_tablet_app/dashbored/dashbored.dart';
 import 'package:dgtera_tablet_app/history/history.dart';
@@ -33,10 +34,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: MyHomePage(title: 'Flutter Demo Home Page'),
-      initialRoute: "login",
+      initialRoute: "/",
 
       routes: {
-        "login": (context) => Login(),
+        "/": (context) => Login(),
         MyRoutes.dashboredRoute: (context) => DashboredScreen(),
         MyRoutes.loginRoute: (context) => Login(),
         MyRoutes.resumeRoute: (context) => ResumeScreen(),
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         MyRoutes.history: (context) => HistoryScreen(),
         MyRoutes.product: (context) => ProductDetails(),
         MyRoutes.password: (context) => ChangePinCode(),
+        MyRoutes.setting: (context) => Setting(),
       }
     );
     

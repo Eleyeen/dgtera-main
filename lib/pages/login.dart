@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:dgtera_tablet_app/reusmeShiftPage/modle/userModel.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +16,17 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 String? pinSelected="";
-
+String username = "user";
+String selectedusername = "emptyuser";
+String selectepassword = "emptypassword";
+                
 class _LoginState extends State<Login> {
   TextEditingController textEditingController = new TextEditingController();
-  List<String> catagory = ['Choose User', 'User111', 'User222', 'User333', 'User333' , 'User444'];
-  String _selectedGatagory = 'Choose User';
-  
+  List<String> catagory = [ 'User111', 'User222', 'User333', 'User444' , 'User555'];
+  List<UserModel> usermodel = [];
+  List<String> userpasswords =['1111','2222','3333','4444','5555'];
+  String _selectedGatagory = 'User111';
+  Map<String,dynamic> usercredentials ={"user1":"1111","user2":"2222","user3":"3333","user4":"4444","user5":"5555"};
   dialog() {
     return showDialog(
       context: context,
@@ -39,6 +45,13 @@ class _LoginState extends State<Login> {
             onChanged: (newValue) {
               setState(() {
                 _selectedGatagory = newValue.toString();
+                username = newValue.toString();
+                usermodel.forEach((element) {
+                  if(username == element.username){
+                    selectedusername = element.username;
+                    selectepassword = element.password;
+                  }
+                });
               });
             },
             items: catagory.map((catagory) {
@@ -52,6 +65,7 @@ class _LoginState extends State<Login> {
               );
             }).toList(),
           ),
+
                 TextButton(
                     onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
@@ -73,7 +87,7 @@ class _LoginState extends State<Login> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
-        title: Text("user111",
+        title: Text(username,
             style: TextStyle(
               color: Colors.grey.shade500,
             )),
@@ -102,7 +116,7 @@ class _LoginState extends State<Login> {
             padding: const EdgeInsets.only(right: 70),
             child: TextButton(
               onPressed: (){
-                // dialog();
+                dialog();
               },
               child: Center(
                   child: Text(
@@ -284,7 +298,8 @@ class _LoginState extends State<Login> {
                                 child: MaterialButton(
                                     padding: EdgeInsets.all(8),
                                     onPressed: () {
-                                      if(pinSelected =="1234"){
+                                      print(selectepassword);
+                                      if(pinSelected ==selectepassword){
                                       Navigator.pushNamed(
                                           context, MyRoutes.dashboredRoute);
                                         }
@@ -322,7 +337,20 @@ class _LoginState extends State<Login> {
   @override
   void initState()
   {
+    int i=0;
     //oddooconnect();
+    //add data to list
+    catagory.forEach((element) {
+       usermodel.add(UserModel(username: element,password: userpasswords[i]));
+       i+=1;      
+    });
+
+      usermodel.forEach((element) {
+        print(element.username);
+        print(element.password);
+        
+      });
+
     super.initState();
   }
 

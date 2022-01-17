@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payNow.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
@@ -23,9 +25,9 @@ class _PayButtonState extends State<PayButton> {
   @override
   Widget build(BuildContext context) {
     double? totalprice = getpricedetails();
-    return body(totalprice);
+    return body(totalprice!);
   }
-  body(double? totalprice){
+  body(double totalprice){
     return GestureDetector(
       onTap: (){
         dialog();
@@ -63,10 +65,10 @@ class _PayButtonState extends State<PayButton> {
     );
   }
   double? getpricedetails(){
-    double? totalprice=0;
+     double totalprice=0;
     selectedItems.forEach((element) {
       setState(() {
-        totalprice = totalprice! + element.foodPrice!;
+        totalprice = totalprice + (element.foodPrice!);
       });
     });
     return totalprice;

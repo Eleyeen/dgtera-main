@@ -1,3 +1,4 @@
+import 'package:dgtera_tablet_app/pages/login.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -177,38 +178,26 @@ class MyDrawer extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600], fontSize: 20),
                   )),
             ),
-
-            Container(
-              color: Color(0xfffff1f1),
-              child: ListTile(
-                  leading: Icon(
-                    CupertinoIcons.news,
-                    color: Color(0xfffff2f3),
-                  ),
-                  title: Text(
-                    "Sitting",
-                    textScaleFactor: 1.2,
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  )),
-            ),
-            Container(
-              color: Colors.grey[400],
-              child: ListTile(
-                  leading: Icon(
-                    CupertinoIcons.settings_solid,
-                    color: Colors.black,
-                  ),
-                  title: Text(
-                    "Setting",
-                    textScaleFactor: 1.2,
-                    style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  )),
+            GestureDetector(
+              onTap:(){
+               Navigator.pushNamed(context, MyRoutes.setting); 
+              },
+              child: Container(
+                color: Colors.grey[400],
+                child: ListTile(
+                    leading: Icon(
+                      CupertinoIcons.settings_solid,
+                      color: Colors.black,
+                    ),
+                    title: Text(
+                      "Setting",
+                      textScaleFactor: 1.2,
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ),
             ),
             Container(
               child: ListTile(
@@ -225,21 +214,42 @@ class MyDrawer extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   )),
             ),
-            Container(
-              color: Colors.grey[400],
-              child: ListTile(
-                  leading: Icon(
-                    CupertinoIcons.news,
-                    color: Colors.black,
-                  ),
-                  title: Text(
-                    "Printer Log",
-                    textScaleFactor: 1.2,
-                    style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  )),
+            GestureDetector(
+              onTap: (){
+                showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return SimpleDialog(
+      insetPadding: EdgeInsets.only(bottom: 1000),
+      
+      titlePadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.zero,
+      children: [
+        Container(
+          width: 300,
+          height: 300,
+        ),
+      ],
+    );
+  },
+);
+              },
+              child: Container(
+                color: Colors.grey[400],
+                child: ListTile(
+                    leading: Icon(
+                      CupertinoIcons.news,
+                      color: Colors.black,
+                    ),
+                    title: Text(
+                      "Printer Log",
+                      textScaleFactor: 1.2,
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ),
             ),
             Container(
               color: Colors.grey[400],
@@ -288,16 +298,21 @@ class MyDrawer extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600], fontSize: 20),
                   )),
             ),
-            ListTile(
-                leading: Icon(
-                  CupertinoIcons.lock,
-                  color: Colors.grey,
-                ),
-                title: Text(
-                  "Lock Screen",
-                  textScaleFactor: 1.2,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 20),
-                )),
+            GestureDetector(
+              onTap: (){
+                Navigator.pushReplacementNamed(context, '/');
+                },
+              child: ListTile(
+                  leading: Icon(
+                    CupertinoIcons.lock,
+                    color: Colors.grey,
+                  ),
+                  title: Text(
+                    "Lock Screen",
+                    textScaleFactor: 1.2,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 20),
+                  )),
+            ),
             Container(
               color: Color(0xfffff2f3),
               child: ListTile(

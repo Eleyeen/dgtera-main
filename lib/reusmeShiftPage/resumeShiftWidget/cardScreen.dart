@@ -1,33 +1,30 @@
+
+import 'package:dgtera_tablet_app/reusmeShiftPage/modle/shiftItemsModle.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardDetail.dart';
 
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customer.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customerTable.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/dateAndTime.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payButton.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payNow.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/removeAddbutton.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/table.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.dart';
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
-import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 
 class CardScreen extends StatefulWidget {
 
-  String? itemName;
-  int? index;
-  CardScreen({this.itemName,this.index});
+  Item? item;
+
+  CardScreen({this.item});
   @override
   _CardScreenState createState() => _CardScreenState();
 }
-
+String itemIncrement = "";
 class _CardScreenState extends State<CardScreen> {
   int itemcount=1;
   String? itmname;
   String? size;
-  int? index;
 
   Widget appBarTitle = Text(
     "My Properties",
@@ -47,8 +44,7 @@ class _CardScreenState extends State<CardScreen> {
     super.initState();
   }
   getItemInfo(){
-    itmname = widget.itemName;
-    index = widget.index;
+    itmname = widget.item!.foodName!;
   }
 
   @override
@@ -77,32 +73,7 @@ class _CardScreenState extends State<CardScreen> {
                 DateAndTime(),
                 Expanded(child:CardDetail()),
                 TotleDetail(),
-                SizedBox(height: 20,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text("Voucher",
-                        style: TextStyle(
-                            color: Colors.black, fontSize: 17)),
-                    SizedBox(width: 10),
-                    Container(
-                        height: 40,
-                        width: 330,
-                        color: Colors.grey[300],
-                        child: Padding(
-                          padding:
-                          const EdgeInsets.only(left: 8.0),
-                          child: TextField(
-
-                            decoration: InputDecoration(
-                                hintText: "  Enter voucher",
-                                border: InputBorder.none),
-                          ),
-                        )),
-                  ],
-                ),
-                SizedBox(height: 20,),
+                
                 PayButton(),
               ],
             ),
@@ -126,8 +97,11 @@ class _CardScreenState extends State<CardScreen> {
                   clearNote(),
                   sizeboxx(),
                   extraSugar(),
-                  discountField(),
+                  Row(children: [
+                     discountField(),
                   doneButton(),
+                  ],)
+                 
                 ],
               ),
             ),
@@ -228,6 +202,7 @@ class _CardScreenState extends State<CardScreen> {
               onTap: (){
                 setState(() {
                   itemcount=itemcount+1;
+
                 });
               },
               child: Container(
@@ -249,12 +224,14 @@ class _CardScreenState extends State<CardScreen> {
             SizedBox(
               width: 80,
             ),
-            Container(
-              width: 100,
-              height: 40,
-              // ignore: deprecated_member_use
-              child: RaisedButton(
-                  onPressed: () {}, child: Text("New")),
+            Expanded(
+              child: Container(
+                width: 100,
+                height: 40,
+                // ignore: deprecated_member_use
+                child: RaisedButton(
+                    onPressed: () {}, child: Text("New")),
+              ),
             ),
           ],
         ),
@@ -494,70 +471,79 @@ class _CardScreenState extends State<CardScreen> {
     );
   }
   discountField(){
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-              "Discount",
-              style: TextStyle(
-                  color: Colors.black, fontSize: 17)),
-          SizedBox(height:10),
-          Container(
-              height: 60,
-              width: 400,
-              color: Colors.grey[300],
-              child: Padding(
-                padding: const EdgeInsets.only(left:8.0),
-                child: TextField(
-                  keyboardType: TextInputType.phone,
-                  controller: discountController,
-                  decoration: InputDecoration(
-                      hintText: "  Enter Discount percent",
-                      border: InputBorder.none),
-                ),
-              )),
-        ],
+    return Expanded(
+      // flex: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                  "Discount",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 17)),
+            ),
+            // SizedBox(height:10),
+            Container(
+                height: 60,
+                width: 400,
+                color: Colors.grey[300],
+                child: Padding(
+                  padding: const EdgeInsets.only(left:8.0),
+                  child: TextField(
+                    keyboardType: TextInputType.phone,
+                    controller: discountController,
+                    decoration: InputDecoration(
+                        hintText: "  Enter Discount percent",
+                        border: InputBorder.none),
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }
   doneButton(){
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 55, 0, 8),
-      child: GestureDetector(
-        onTap: (){
-          String note = noteController.text;
-          double? dis = double.parse(discountController.text);
-          selectedItems[index!].size= size;
-          selectedItems[index!].note= note;
-          selectedItems[index!].dis= dis;
-          double? price = selectedItems[index!].foodPrice;
-          //adjusting price
-          if(itemcount > 1){
-            selectedItems[index!].foodPrice = price! * itemcount;
-          }
-          if(dis>0){
-            double disPrice = (price! * dis)/100;
-            double finalPriceWithDiscount = price - disPrice;
-            selectedItems[index!].foodPrice = finalPriceWithDiscount;
-          }
-          Navigator.push(context, MaterialPageRoute(builder: (builder)=>ResumeScreen()));
-        },
-        child: Container(
-          height: 50,
-          width: 600,
-          decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.all(Radius.circular(4))),
-          child: Center(
-              child: Text(
-                "Done",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
-              )),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 45, 0, 8),
+        child: GestureDetector(
+          onTap: (){
+            String note = noteController.text;
+            double? dis =double.parse(discountController.text) ;
+            widget.item!.size= size;
+            widget.item!.note= note;
+            widget.item!.dis= dis;
+            double? price = widget.item!.foodPrice ;
+            // if(itemcount )
+            //adjusting price
+            if(itemcount > 1){
+              widget.item!.totlePrice = ((price! * itemcount) );
+            }
+            if(dis>0 || dis == 0 ){
+              double disPrice = (price! * dis)/100;
+              double finalPriceWithDiscount = price - disPrice;
+              widget.item!.foodPrice = finalPriceWithDiscount;
+            }
+            Navigator.push(context, MaterialPageRoute(builder: (builder)=>ResumeScreen()));
+          },
+          child: Container(
+            height: 60,
+            width: 600,
+            decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.all(Radius.circular(4))),
+            child: Center(
+                child: Text(
+                  "Done",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold),
+                )),
+          ),
         ),
       ),
     );

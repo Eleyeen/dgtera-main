@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 
-class SalesReport extends StatelessWidget {
+class SalesReport extends StatefulWidget {
   const SalesReport({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<SalesReport> createState() => _SalesReportState();
+}
+
+class _SalesReportState extends State<SalesReport> {
+  DateTime selectedDate = DateTime.now();
+  
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      }
+      );
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -19,14 +38,19 @@ class SalesReport extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: Text("Date:",
-                      style: TextStyle(
-                        fontSize: 20,
-                      )),
+                  child: GestureDetector(
+                    onTap: (){
+                      selectDate(context);
+                    },
+                    child: Text("Date:",
+                        style: TextStyle(
+                          fontSize: 20,
+                        )),
+                  ),
                 ),
                 SizedBox(width: 16),
                 Text(
-                  "02/09/2021",
+                  ("${selectedDate.toLocal()}".split(' ')[0]),
                   style: TextStyle(
                       fontSize: 20,
                       color: Colors.blue,

@@ -6,7 +6,8 @@ class CustomerTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return
+     Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,5 +64,6 @@ class CustomerTable extends StatelessWidget {
         ),
       ],
     );
+ 
   }
 }

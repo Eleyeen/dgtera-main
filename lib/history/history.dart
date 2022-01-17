@@ -6,16 +6,64 @@ import 'package:dgtera_tablet_app/history/rejectedhitory.dart';
 import 'package:dgtera_tablet_app/history/voidhistory.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
+
 
   @override
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen>
-    with SingleTickerProviderStateMixin {
+class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
+  
+  List<DropdownMenuItem<String>> get dropdownItems{
+  List<DropdownMenuItem<String>> menuItems = [
+    DropdownMenuItem(child: Align(
+      alignment: Alignment.centerLeft,
+      child: Text("Session" ,style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),),
+    ),value: "Session"),
+    DropdownMenuItem(child: Text("User1"),value: "User1"),
+    DropdownMenuItem(child: Text("User2"),value: "User2"),
+    DropdownMenuItem(child: Text("User3"),value: "User3"),
+    DropdownMenuItem(child: Text("User4"),value: "User4"),
+    DropdownMenuItem(child: Text("User5"),value: "User5"),
+  ];
+  return menuItems;
+}
+String selectedValue = "Session";
+
+  DateTime selectedDate = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      }
+      );
+  }
+
+  DateTime selectedDate1 = DateTime.now();
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate1,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate1)
+      setState(() {
+        selectedDate1 = picked;
+      }
+      );
+  }
   late TabController _controller;
   String? _chosenValue;
 
@@ -97,12 +145,21 @@ class _HistoryScreenState extends State<HistoryScreen>
                       child: Expanded(
                         child: Row(
                           children: [
-                            Text("From:",
-                                style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold)),
+                            
+                            TextButton(onPressed: (){
+                              _selectDate(context);
+                            },
+
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.grey.shade300)
+                            ),
+                              child: Text("From:",
+                                  style: TextStyle(
+                                      fontSize: 17, fontWeight: FontWeight.bold)),
+                            ),
                             SizedBox(width: 12),
                             Text(
-                              "02/09/2021",
+                              ("${selectedDate.toLocal()}".split(' ')[0]),
                               style: TextStyle(
                                   fontSize: 17,
                                   color: Colors.blue,
@@ -111,13 +168,21 @@ class _HistoryScreenState extends State<HistoryScreen>
                             SizedBox(
                               width: 12,
                             ),
-                            Text("To:",
-                                style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold)),
+                            TextButton(
+                              onPressed: (){
+                                selectDate(context);
+                              },
+                              style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.grey.shade300)
+                            ),
+                              child: Text("To:",
+                                  style: TextStyle(
+                                      fontSize: 17, fontWeight: FontWeight.bold)),
+                            ),
                             SizedBox(
                               width: 12,
                             ),
-                            Text("02/09/2021",
+                            Text(("${selectedDate1.toLocal()}".split(' ')[0]),
                                 style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.blue,
@@ -145,6 +210,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                             ),
                           ],
                         ),
+  
                       ),
                     ),
                   ),
@@ -154,81 +220,75 @@ class _HistoryScreenState extends State<HistoryScreen>
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     width: MediaQuery.of(context).size.width/4,
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
-                    child: DropdownButton<String>(
+                    child: DropdownButton(
                       iconEnabledColor: Colors.black,
-                      dropdownColor: Colors.white,
-                      isExpanded: true,
-                      underline:SizedBox(),
-                      value: _chosenValue,
-                      //elevation: 5,
-                      style: TextStyle(color: Colors.black),
+                        dropdownColor: Colors.white,
+                        isExpanded: true,
+                        underline:SizedBox(),
+                        
+                        //elevation: 5,
+                        style: TextStyle(color: Colors.black),
+      value: selectedValue,
+      onChanged: (String? newValue){
+        setState(() {
+          selectedValue = newValue!;
+        });
+      },
+      items: dropdownItems,
+      // hint: Align(
+      //      alignment: Alignment.centerLeft,
+      //                     child: Text(
+      //                       "Session",
+                            
+      //                     ),
+      //                   ),
+      )
 
-                      items: <String>[
-                        'User 1',
-                        'User 2',
-                        'User 3',
-                        'User 4',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      hint: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Session",
-                          style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _chosenValue = value;
-                        });
-                      },
-                    ),
                   ),
                   // SizedBox(width: 8,),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    width: MediaQuery.of(context).size.width/4,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
-                    child: DropdownButton<String>(
-                      iconEnabledColor: Colors.black,
-                      dropdownColor: Colors.white,
-                      isExpanded: true,
-                      underline:SizedBox(),
-                      value: _chosenValue,
-                      //elevation: 5,
-                      style: TextStyle(color: Colors.black),
-
-                      items: <String>[
-                        'Credit',
-                        'Cash',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      hint: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Sale Report",
-                          style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      width: MediaQuery.of(context).size.width/4,
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
+                      child: DropdownButton<String>(
+                        iconEnabledColor: Colors.black,
+                        dropdownColor: Colors.white,
+                        isExpanded: true,
+                        underline:SizedBox(),
+                        value: _chosenValue,
+                        //elevation: 5,
+                        style: TextStyle(color: Colors.black),
+                  
+                        items: <String>[
+                          'Credit',
+                          'Cash',
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        hint: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Sale Report",
+                            style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
+                        onChanged: (String? value) {
+                          setState(() {
+                            _chosenValue = value;
+                          });
+                        },
                       ),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _chosenValue = value;
-                        });
-                      },
+ 
+ 
+ 
+ 
                     ),
                   ),
    

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 
@@ -14,10 +16,10 @@ class _TotleDetailState extends State<TotleDetail> {
     super.initState();
   }
   double? getpricedetails(){
-    double? totalprice=0;
+    double totalprice=0;
     selectedItems.forEach((element) {
       setState(() {
-        totalprice = totalprice! + element.foodPrice!;
+        totalprice = (totalprice + (element.foodPrice!));
       });
     });
     return totalprice;
@@ -25,7 +27,7 @@ class _TotleDetailState extends State<TotleDetail> {
 
   @override
   Widget build(BuildContext context) {
-    int? totalitems = selectedItems.length;
+    num? totalitems = selectedItems.length ;
     double? totalprice = getpricedetails();
     return SingleChildScrollView(
       child: Container(

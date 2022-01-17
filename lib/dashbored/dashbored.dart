@@ -1,13 +1,24 @@
+import 'package:dgtera_tablet_app/pages/login.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
-class DashboredScreen extends StatelessWidget {
-  const DashboredScreen({Key? key}) : super(key: key);
+class DashboredScreen extends StatefulWidget {
+  // const DashboredScreen({Key? key}) : super(key: key);
+  @override
+  State<DashboredScreen> createState() => _DashboredScreenState();
+}
+
+class _DashboredScreenState extends State<DashboredScreen> {
+  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+
+  final List<String> operators = ["shahab" , "ahmad" , "Waleed" , "fazal" , " amjid" , "kamran" ,"danyal","shahab" , "ahmad" , "Waleed" , "fazal" , " amjid" , "kamran" ,"danyal"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _drawerKey,
+      drawer: MyDrawer(),
       appBar: AppBar(
         actions: [
           IconButton(
@@ -126,7 +137,9 @@ class DashboredScreen extends StatelessWidget {
                                 width: 12,
                               ),
                               OutlinedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(context, '/');
+                                },
                                 child: Container(
                                   width: 250,
                                   height: 80,
@@ -143,8 +156,9 @@ class DashboredScreen extends StatelessWidget {
                             height: 12,
                           ),
                           OutlinedButton(
+                          
                             onPressed: () {
-                              MyDrawer();
+                              _drawerKey.currentState!.openDrawer();
                             },
                             child: Container(
                               width: 250,
@@ -170,57 +184,110 @@ class DashboredScreen extends StatelessWidget {
                   decoration: BoxDecoration(color: Colors.grey),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.checklist_rtl,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                        Center(
-                            child: Padding(
-                          padding: const EdgeInsets.only(left: 230),
-                          child: Text(
-                            "OPERATIONS",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
+                    child: Center(
+                        child: Text(
+                          "OPERATIONS",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         )),
+                  )),
+                  Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  decoration: BoxDecoration(color: Colors.grey),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                       Container(
+                         width: MediaQuery.of(context).size.width/8,
+                         
+                            child: Text(
+                              "Operators",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )),
+                        Container(
+                          width: MediaQuery.of(context).size.width/6,
+                         
+                            child: Text(
+                              "In Time",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )),
+                        Expanded(
+                          // width: MediaQuery.of(context).size.width/4,
+                            child: Text(
+                              "Out Time",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )),
                       ],
                     ),
                   )),
+
               Expanded(
                 child: ListView.separated(
                     separatorBuilder: (context, index) {
                       return Divider();
                     },
-                    itemCount: 13,
+                    itemCount: operators.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        leading: Text(
-                          "POS",
-                          style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        trailing: Text(
-                          "POS07",
-                          style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
+                      return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  // decoration: BoxDecoration(color: Colors.grey)
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                     Padding(
+                       padding: const EdgeInsets.all(8.0),
+                       child: Container(
+                         width: MediaQuery.of(context).size.width/8,
+                            child: Text(
+                              operators[index],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            )),
+                     ),
+                      Container(
+                        width: MediaQuery.of(context).size.width/6,
+                          child: Text(
+                            TimeOfDay.now().toString(),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          )),
+                      Expanded(
+                          child: Text(
+                            TimeOfDay.now().toString(),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          )),
+                    ],
+                  ));
+
                     }),
               ),
             ],
           ))
         ],
       ),
-      drawer: MyDrawer(),
+      
     );
   }
 }
