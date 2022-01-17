@@ -48,7 +48,7 @@ class _CardDetailState extends State<CardDetail> {
                       ),
                       child: Center(
                         child: Text(
-                          "$count".toString(),
+                       ( index+1).toString(),
                           style: TextStyle(
                               fontSize: 30,
                               color: Colors.black),
@@ -77,7 +77,7 @@ class _CardDetailState extends State<CardDetail> {
                             color: Colors.grey[600])),
                         GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (builder)=>CardScreen(itemName: selectedItems[index].foodName!,index: index,)));
+                            Navigator.push(context, MaterialPageRoute(builder: (builder)=>CardScreen(item: selectedItems[index])));
                           },
                           child: Icon(Icons.note_add_rounded,size: 30,),),
                       ],
@@ -102,7 +102,7 @@ class _CardDetailState extends State<CardDetail> {
                                   Navigator.push(context, MaterialPageRoute(builder: (builder)=>ResumeScreen()));
                                 }, child: Text("Yes",style: TextStyle(color: Colors.black),))
                               ],
-                              content: Text("Are you sure you want o delete this Item"),
+                              content: Text("Are you sure you want to delete this Item"),
                             ));
                       },
                       child: Icon(Icons.delete),

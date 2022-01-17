@@ -1,3 +1,4 @@
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/table.dart';
 import 'package:flutter/material.dart';
 
 class DateAndTime extends StatelessWidget {
@@ -7,7 +8,8 @@ class DateAndTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return 
+    Container(
       height: 50,
       decoration: BoxDecoration(
           color: Colors.white,
@@ -21,9 +23,12 @@ class DateAndTime extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
-              Icons.more_vert,
-              size: 50,
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: IconButton(onPressed: (){
+                
+              }, icon: Icon(Icons.cancel))
+              
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -36,14 +41,30 @@ class DateAndTime extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Icon(
-                Icons.list_alt,
-              ),
+              padding: const EdgeInsets.only(right:16),
+              child: TextButton.icon(onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
+              }, icon: Icon(Icons.sync,color: Colors.black,), label: Text("Switch Table",style: TextStyle(color: Colors.black),)),
             )
+            // Row(
+            //   children: [
+            //     IconButton(icon: Icon(Icons.sync), onPressed: () { 
+            //         Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
+            //      },
+                  
+                  
+            //     ),
+            //      Padding(
+            //        padding: const EdgeInsets.only(right: 8),
+            //        child: Text("Switch Table"),
+            //      )
+            //   ],
+            // ),
+           
           ],
         ),
       ),
     );
+  
   }
 }
