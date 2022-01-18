@@ -24,22 +24,12 @@ class DateAndTime extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: IconButton(onPressed: (){
-                
-              }, icon: Icon(Icons.cancel))
-              
+              padding: const EdgeInsets.only(right:16),
+              child: TextButton.icon(onPressed: (){
+                        
+              }, icon: Icon(Icons.cancel,color: Colors.black,), label: Text("Clear list",style: TextStyle(color: Colors.black),)),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "#",
-                  style: TextStyle(color: Colors.blue),
-                ),
-                Text("Date/Time"),
-              ],
-            ),
+            
             Padding(
               padding: const EdgeInsets.only(right:16),
               child: TextButton.icon(onPressed: (){

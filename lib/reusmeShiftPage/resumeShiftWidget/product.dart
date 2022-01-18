@@ -31,8 +31,8 @@ class _ProductState extends State<Product> {
   List<double> foodprice = [
     100, 190, 200, 50, 230, 170, 100, 50, 25, 30, 100, 190, 200, 50, 230, 170, 100, 50, 25, 30, 100, 190, 200, 50, 230, 170, 100, 50, 25, 30,
   ];
- List<String> catagory = [ 'Please choose a Catagory','Food', 'Fruits', 'Halwa', 'Vegitable' , 'Fast food'];
- String _selectedGatagory = 'Please choose a Catagory';
+ List<String> catagory = [ 'Search by Catagory','Food', 'Fruits', 'Halwa', 'Vegitable' , 'Fast food'];
+ String _selectedGatagory = 'Search by Catagory';
   @override
   Widget build(BuildContext context) {
 
@@ -50,7 +50,13 @@ class _ProductState extends State<Product> {
                    color: Colors.white,
                    height: 40,
                    child: DropdownButton(
-            hint: Text('Please choose a Catagory'), // Not necessary for Option 1
+            hint: Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Search by Catagory',style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),),
+            ), // Not necessary for Option 1
             value: _selectedGatagory,
             onChanged: (newValue) {
               setState(() {
@@ -59,7 +65,7 @@ class _ProductState extends State<Product> {
             },
             items: catagory.map((catagory) {
               return DropdownMenuItem(
-                enabled: true,
+                // enabled: true,
                 child:  Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(catagory),

@@ -242,7 +242,7 @@ class _CardScreenState extends State<CardScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
-      height: 100,
+      height: 170,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -253,7 +253,7 @@ class _CardScreenState extends State<CardScreen> {
               "Size",
               style: TextStyle(fontSize: 20),
             ),
-            Row(
+            Column(
               children: [
                 GestureDetector(
                   onTap:(){
@@ -273,7 +273,7 @@ class _CardScreenState extends State<CardScreen> {
                   ),
                 ),
                 SizedBox(
-                  width: 16,
+                  height: 16,
                 ),
                 GestureDetector(
                   onTap:(){
@@ -324,134 +324,18 @@ class _CardScreenState extends State<CardScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
-      height: 300,
+      height: 200,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )
-                ),
-                SizedBox(
-                  width: 14,
-                ),
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )),
-                SizedBox(
-                  width: 14,
-                ),
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )),
-              ],
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )
-                ),
-                SizedBox(
-                  width: 14,
-                ),
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )),
-                SizedBox(width: 14),
-                Container(
-                    width:
-                    MediaQuery.of(context).size.width / 5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            hintText: "Extra Suger",
-                            border: InputBorder.none),
-                      ),
-                    )),
-              ],
-            ),
-            SizedBox(
-              height: 16,
-            ),
+  
+  
             Container(
               height: 150,
               width: MediaQuery.of(context).size.width,
-              color: Colors.grey[300],
+              color: Colors.grey[200],
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -469,7 +353,9 @@ class _CardScreenState extends State<CardScreen> {
         ),
       ),
     );
+
   }
+
   discountField(){
     return Expanded(
       // flex: 1,
@@ -489,7 +375,10 @@ class _CardScreenState extends State<CardScreen> {
             Container(
                 height: 60,
                 width: 400,
+                
+                decoration: BoxDecoration(
                 color: Colors.grey[300],
+                borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: Padding(
                   padding: const EdgeInsets.only(left:8.0),
                   child: TextField(
@@ -498,6 +387,7 @@ class _CardScreenState extends State<CardScreen> {
                     decoration: InputDecoration(
                         hintText: "  Enter Discount percent",
                         border: InputBorder.none),
+                        
                   ),
                 )),
           ],

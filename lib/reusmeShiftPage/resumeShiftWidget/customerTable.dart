@@ -42,7 +42,7 @@ class CustomerTable extends StatelessWidget {
         ),
         GestureDetector(
           onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
+            
           },
           child: Container(
             decoration: BoxDecoration(
@@ -56,7 +56,7 @@ class CustomerTable extends StatelessWidget {
                 children: [
                   Icon(Icons.table_chart),
                   SizedBox(width: 8),
-                  Text("Table"),
+                  Text("Points"),
                 ],
               ),
             ),

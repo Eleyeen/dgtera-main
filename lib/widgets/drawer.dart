@@ -1,4 +1,5 @@
 import 'package:dgtera_tablet_app/pages/login.dart';
+import 'package:dgtera_tablet_app/pages/pincode.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,7 @@ class MyDrawer extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     title: Text(
-                      "Dashbored",
+                      "Dashboard",
                       textScaleFactor: 1.2,
                       style: TextStyle(color: Colors.grey[600], fontSize: 20),
                     )),
@@ -285,7 +286,10 @@ class MyDrawer extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, MyRoutes.password);
+                Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => ChangePinCode()),
+  );
               },
               child: ListTile(
                   leading: Icon(
@@ -313,35 +317,8 @@ class MyDrawer extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600], fontSize: 20),
                   )),
             ),
-            Container(
-              color: Color(0xfffff2f3),
-              child: ListTile(
-                  leading: Icon(
-                    CupertinoIcons.news,
-                    color: Color(0xfffff2f3),
-                  ),
-                  title: Text(
-                    "Language",
-                    textScaleFactor: 1.2,
-                    style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  )),
-            ),
-            ListTile(
-                leading: Icon(
-                  CupertinoIcons.news,
-                  color: Colors.white,
-                ),
-                title: Text(
-                  "العربیہ",
-                  textScaleFactor: 1.2,
-                  style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                )),
+            
+            
           ],
         ),
       ),
