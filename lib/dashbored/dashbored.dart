@@ -1,10 +1,15 @@
+import 'package:flutter/material.dart';
+
 import 'package:dgtera_tablet_app/pages/login.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
-import 'package:flutter/material.dart';
 
 class DashboredScreen extends StatefulWidget {
-  // const DashboredScreen({Key? key}) : super(key: key);
+  String username;
+  DashboredScreen({
+    Key? key,
+    required this.username,
+  }) : super(key: key);
   @override
   State<DashboredScreen> createState() => _DashboredScreenState();
 }
@@ -91,7 +96,7 @@ class _DashboredScreenState extends State<DashboredScreen> {
                           Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Text(
-                              'User111',
+                              username,
                               style: TextStyle(
                                 fontSize: 35.0,
                                 letterSpacing: 1.5,

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         "/": (context) => Login(),
-        MyRoutes.dashboredRoute: (context) => DashboredScreen(),
+        MyRoutes.dashboredRoute: (context) => DashboredScreen(username: '',),
         MyRoutes.loginRoute: (context) => Login(),
         MyRoutes.resumeRoute: (context) => ResumeScreen(),
         MyRoutes.reports: (context) => ReportScreen(),

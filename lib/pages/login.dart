@@ -1,12 +1,8 @@
 
-import 'dart:convert';
 
+import 'package:dgtera_tablet_app/dashbored/dashbored.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/modle/userModel.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:dgtera_tablet_app/utilities/routes.dart';
-import 'package:http/http.dart' as http;
 import 'package:odoo/odoo.dart';
 
 class Login extends StatefulWidget {
@@ -300,8 +296,7 @@ class _LoginState extends State<Login> {
                                     onPressed: () {
                                       print(selectepassword);
                                       if(pinSelected ==selectepassword){
-                                      Navigator.pushNamed(
-                                          context, MyRoutes.dashboredRoute);
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => DashboredScreen(username: username,)));
                                         }
                                       else{
                                       print("invalid pin");
