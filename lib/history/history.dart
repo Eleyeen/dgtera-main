@@ -1,9 +1,5 @@
 import 'package:dgtera_tablet_app/history/PaidHistory.dart';
 import 'package:dgtera_tablet_app/history/SyncedHistory.dart';
-import 'package:dgtera_tablet_app/history/allHistory.dart';
-import 'package:dgtera_tablet_app/history/pendingHisotry.dart';
-import 'package:dgtera_tablet_app/history/rejectedhitory.dart';
-import 'package:dgtera_tablet_app/history/voidhistory.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -70,7 +66,7 @@ String selectedValue = "Session";
   @override
   void initState() {
     super.initState();
-    _controller = new TabController(length: 6, vsync: this);
+    _controller = new TabController(length: 2, vsync: this);
   }
 
   @override
@@ -115,24 +111,24 @@ String selectedValue = "Session";
                         color: Colors.white,
                       ),
                       tabs: [
-                        new Tab(
-                          child: Text("Synced"),
+                        Tab(
+                          child: Text("Completed Order"),
                         ),
-                        new Tab(
-                          text: 'paid',
+                       Tab(
+                          text: 'Order Return',
                         ),
-                        new Tab(
-                          text: 'Pending',
-                        ),
-                        new Tab(
-                          text: 'Void',
-                        ),
-                        new Tab(
-                          text: 'Rejected',
-                        ),
-                        new Tab(
-                          text: 'All',
-                        ),
+                        // new Tab(
+                        //   text: 'Pending',
+                        // ),
+                        // new Tab(
+                        //   text: 'Void',
+                        // ),
+                        // new Tab(
+                        //   text: 'Rejected',
+                        // ),
+                        // new Tab(
+                        //   text: 'All',
+                        // ),
                       ],
                     ),
                   ),
@@ -340,10 +336,10 @@ String selectedValue = "Session";
                         children: <Widget>[
                           Synced(),
                           Paid(),
-                          Pending(),
-                          Void(),
-                          Rejected(),
-                          All()
+                          // Pending(),
+                          // Void(),
+                          // Rejected(),
+                          // All()
                         ],
                       ),
                     ),

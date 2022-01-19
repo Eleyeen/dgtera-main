@@ -103,50 +103,8 @@ class AddProduct extends StatelessWidget {
                           ),
                         ),
                 SizedBox(height:16),
-                Container(
-                          width: MediaQuery.of(context).size.width/2,
-                          height: 50,
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8, top: 12),
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                hintText: "Stock",
-                                focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                         ), 
-                              ),
-                              style: TextStyle(
-                                  fontSize: 20, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width/2,
-                          height: 50,
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8, top: 12),
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                              hintText: "Product",
-                                focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                ), 
-                              ),
-                              style: TextStyle(
-                                  fontSize: 20, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
+             
+ 
                         Container(
                           width: MediaQuery.of(context).size.width/2,
                           height: 50,

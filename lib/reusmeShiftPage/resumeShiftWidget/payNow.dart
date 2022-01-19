@@ -133,10 +133,10 @@ class _PayNowScreenState extends State<PayNowScreen> {
       ],
     ),
  
-                SizedBox(
-                  height: 8,
-                ),
-                DateAndTime(),
+                // SizedBox(
+                //   height: 8,
+                // ),
+                // DateAndTime(),
                 SizedBox(
                   height: 8,
                 ),

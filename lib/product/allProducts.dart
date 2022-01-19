@@ -1,4 +1,5 @@
 import 'package:dgtera_tablet_app/product/AddProduct.dart';
+import 'package:dgtera_tablet_app/product/catogory.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardScreen.dart';
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class ProductDetails extends StatelessWidget {
                         )),
                     // SizedBox(width: 8,),
                     Container(
-                      width: MediaQuery.of(context).size.width /1.5,
+                      width: MediaQuery.of(context).size.width /1.9,
                       height: 40,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -50,6 +51,7 @@ class ProductDetails extends StatelessWidget {
                         ),
                       ),
                     ),
+                    
                     Container(
                         height: 40,
                         width: 80,
@@ -58,7 +60,7 @@ class ProductDetails extends StatelessWidget {
                           Icons.search,
                           color: Colors.white,
                         )),
-                        SizedBox(width:16),
+                        SizedBox(width:8),
                         Expanded(
                       child: GestureDetector(
                         onTap: (){
@@ -74,6 +76,31 @@ class ProductDetails extends StatelessWidget {
                           child: Center(
                             child: Text(
                               "Add Product",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8,),
+                      Expanded(
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Catogory()),
+                          );
+                        },
+                        child: Container(
+                          // width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          decoration: BoxDecoration(color: Colors.grey),
+                          child: Center(
+                            child: Text(
+                              "Add Category",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
