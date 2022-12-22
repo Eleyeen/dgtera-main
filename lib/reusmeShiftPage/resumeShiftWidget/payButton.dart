@@ -1,9 +1,10 @@
-import 'dart:ffi';
 
+import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/payNow.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class PayButton extends StatefulWidget {
@@ -22,15 +23,26 @@ class _PayButtonState extends State<PayButton> {
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     double? totalprice = getpricedetails();
     return body(totalprice!);
   }
   body(double totalprice){
+    final tax = Provider.of<TaxProvider>(context, listen: false);
+
+    if (tax.totalTax == null){
+      setState(() {
+        tax.setTax(0.0);
+      });
+    }
+
     return GestureDetector(
       onTap: (){
         dialog();
+        print(totalprice.toString());
       },
       child: Container(
         height: 45,
@@ -51,8 +63,8 @@ class _PayButtonState extends State<PayButton> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              Text(
-                "$totalprice SAR >",
+              Text( tax.tax.toString() == '0.0' ? "${totalprice.toString()} SAR >" :
+                "${tax.totalTax.toString()} SAR >",
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -68,11 +80,12 @@ class _PayButtonState extends State<PayButton> {
      double totalprice=0;
     selectedItems.forEach((element) {
       setState(() {
-        totalprice = totalprice + (element.foodPrice!);
+        totalprice = totalprice + (element.discount!);
       });
     });
     return totalprice;
   }
+
 
   dialog() {
     return showDialog(

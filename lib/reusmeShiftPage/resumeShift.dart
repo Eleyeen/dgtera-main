@@ -76,8 +76,6 @@ class _ResumeScreenState extends State<ResumeScreen> {
                 ),
                 DateAndTime(),
                 SizedBox(height: 6,),
-                
-                
                 Expanded(child: CardDetail()),
                 TotleDetail(),
                 SizedBox(height: 6,),

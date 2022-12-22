@@ -1,38 +1,46 @@
 
-import 'dart:ffi';
+class Item {
 
-class Item{
+ late final int? id;
+  String? foodName;
+  double? foodPrice;
+  int? quantity;
+  String? note;
+  double? discount;
+  String? size;
+  double? totalPrice;
 
- String? foodName ;
- double? foodPrice;
- int? x;
- String? note;
- double? dis;
- String? size;
- double totlePrice ;
-//  get getTotlePrice => this.totlePrice;
-//  set setTotlePrice(totlePrice) => this.totlePrice = totlePrice;
+ Item({
+  required this.id ,
+  required this.foodName,
+  required this.foodPrice,
+  required this.quantity,
+  required this.note,
+  required this.discount,
+  required this.size,
+  required this.totalPrice,
+ });
 
-//   get get => this.foodName;
-//  set setFoodName(foodName ) => this.foodName = foodName;
+ Item.fromMap(Map<dynamic , dynamic>  res)
+     : id = res['id'],
+      foodName = res["foodName"],
+      foodPrice = res["foodPrice"],
+      quantity = res["quantity"],
+      note = res["note"],
+      discount = res["discount"],
+      size = res["size"],
+      totalPrice = res["totalPrice"];
 
-//   get getFoodPrice => this.foodPrice;
-//  set setFoodPrice( foodPrice) => this.foodPrice = foodPrice;
-
-//   get getX => this.x;
-//  set setX( x) => this.x = x;
-
-//   get getNote => this.note;
-//  set setNote( note) => this.note = note;
-
-//   get getDis => this.dis;
-//  set setDis( dis) => this.dis = dis;
-
-//   get getSize => this.size;
-//  set setSize( size) => this.size = size;
-
- Item({this.foodName,this.foodPrice,this.x,this.note,this.dis,this.size,required this.totlePrice});
-
-  get widget => null;
- 
+ Map<String, Object?> toMap(){
+  return {
+   'id' : id ,
+   'foodName' : foodName,
+   'foodPrice' :foodPrice,
+   'quantity' :quantity,
+   'note' : note,
+   'discount' : discount,
+   'size' : size,
+   'totalPrice' : totalPrice,
+  };
+ }
 }

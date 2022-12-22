@@ -1,8 +1,97 @@
+import 'dart:convert';
+
+import 'package:dgtera_tablet_app/Models/ShowCustomerModel.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/addCostumer.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
-class Customer extends StatelessWidget {
-  const Customer({Key? key}) : super(key: key);
+class Customer extends StatefulWidget {
+  Customer({Key? key}) : super(key: key);
+
+  @override
+  State<Customer> createState() => _CustomerState();
+}
+
+class _CustomerState extends State<Customer> {
+  List<ShowCustomerModel> showCustomerList = [];
+
+  Future<List<ShowCustomerModel>> showCustomer() async {
+    final response =
+        await get(Uri.parse("https://api.woga-pos.com/show_customers.php"));
+    var data = jsonDecode(response.body.toString());
+    if (response.statusCode == 200) {
+      showCustomerList.clear();
+      for (Map i in data) {
+        showCustomerList.add(ShowCustomerModel.fromJson(i));
+      }
+      return showCustomerList;
+    }
+    return showCustomerList;
+  }
+  // String? name = '';
+
+  List<dynamic> itemsAll = [];
+
+  bool showListAll = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      itemsAll.addAll(showCustomerList);
+    });
+    super.initState();
+    print(itemsAll);
+  }
+
+  List<dynamic> items = [];
+
+  void filterSearchResults(String query) {
+    List<dynamic> dummySearchList = [];
+    dummySearchList.addAll(showCustomerList.map((e) => e.name.toString()));
+    if (query.isNotEmpty) {
+      List<dynamic> dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        items.clear();
+        items.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        items.clear();
+        items.addAll(showCustomerList);
+      });
+    }
+  }
+
+  void filterSearchResultsAll(String query) {
+    List<dynamic> dummySearchList = [];
+    dummySearchList.addAll(showCustomerList.map((e) => e.name.toString()));
+    if (query.isNotEmpty) {
+      List<dynamic> dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        itemsAll.clear();
+        itemsAll.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        itemsAll.clear();
+        itemsAll.addAll(showCustomerList);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +132,17 @@ class Customer extends StatelessWidget {
                       color: Colors.white,
                     ),
                     child: TextField(
+                      onChanged: (value) {
+                        filterSearchResultsAll(value);
+                        setState(() {
+                          print(itemsAll);
+                          if (value.length > 0) {
+                            showListAll = false;
+                          } else {
+                            showListAll = true;
+                          }
+                        });
+                      },
                       decoration: InputDecoration(
                         icon: Icon(
                           Icons.search,
@@ -69,8 +169,11 @@ class Customer extends StatelessWidget {
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (builder)=> AddCostomer()));
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => AddCostomer()));
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width,
@@ -162,84 +265,203 @@ class Customer extends StatelessWidget {
                     ),
                   ],
                 ),
-     
                 Expanded(
-                  child: ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return Divider();
-                      },
-                      itemCount: 13,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3,
-                              height: 50,
-                              decoration: BoxDecoration(color: Colors.white),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.person,
-                                      color: Colors.purple,
-                                      size: 25,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: Text(
-                                        "Shahab Ata",
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 5,
-                              height: 50,
-                              decoration: BoxDecoration(color: Colors.white),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 8, top: 12),
-                                child: Text(
-                                  "00923105101012",
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.black),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 2),
-                            Expanded(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                height: 50,
-                                decoration: BoxDecoration(color: Colors.white),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, top: 12),
-                                  child: Text(
-                                    "Peshawar Pakistan",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                ),
+                    child: showListAll
+                        ? FutureBuilder(
+                            future: showCustomer(),
+                            builder: (context, snapshot) {
+                              return ListView.separated(
+                                  separatorBuilder: (context, index) {
+                                    return Divider();
+                                  },
+                                  itemCount: showCustomerList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.person,
+                                                  color: Colors.purple,
+                                                  size: 25,
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8),
+                                                  child: Text(
+                                                    showCustomerList[index]
+                                                        .name
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              5,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8, top: 12),
+                                            child: Text(
+                                              showCustomerList[index]
+                                                  .phone
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 2),
+                                        Expanded(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8, top: 12),
+                                              child: Text(
+                                                showCustomerList[index]
+                                                    .address
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            })
+                        : FutureBuilder(
+                            future: showCustomer(),
+                            builder: (context, snapshot) {
+                              return ListView.separated(
+                                  separatorBuilder: (context, index) {
+                                    return Divider();
+                                  },
+                                  itemCount: itemsAll.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.person,
+                                                  color: Colors.purple,
+                                                  size: 25,
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8),
+                                                  child: Text(
+                                                    itemsAll[index].toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              5,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8, top: 12),
+                                            child: Text(
+                                              showCustomerList[index]
+                                                  .phone
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 2),
+                                        Expanded(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8, top: 12),
+                                              child: Text(
+                                                showCustomerList[index]
+                                                    .address
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            })),
               ],
             ),
           ),
         ]));
- 
   }
 }
-

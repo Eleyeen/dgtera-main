@@ -8,4 +8,5 @@ class MyRoutes {
   static var product = "/product";
   static var password = "/password";
   static var setting = "/password";
+  static var tax = "/tax";
 }

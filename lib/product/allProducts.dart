@@ -1,11 +1,40 @@
+import 'dart:convert';
+
+import 'package:dgtera_tablet_app/Models/CatProductModel.dart';
 import 'package:dgtera_tablet_app/product/AddProduct.dart';
 import 'package:dgtera_tablet_app/product/catogory.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardScreen.dart';
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
-class ProductDetails extends StatelessWidget {
+class ProductDetails extends StatefulWidget {
   const ProductDetails({ Key? key }) : super(key: key);
+
+  @override
+  State<ProductDetails> createState() => _ProductDetailsState();
+}
+
+class _ProductDetailsState extends State<ProductDetails> {
+  List<CatProductModel> allProductList = [];
+
+  var data;
+
+  Future<List<CatProductModel>> getAllProducts() async {
+    final response = await get(Uri.parse(
+        'https://api.woga-pos.com/show_products.php'));
+    data = jsonDecode(response.body.toString());
+    if (response.statusCode == 200) {
+      allProductList.clear();
+      for (Map i in data) {
+        allProductList.add(CatProductModel.fromJson(i));
+      }
+      return allProductList;
+    } else {
+      return allProductList;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +80,7 @@ class ProductDetails extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     Container(
                         height: 40,
                         width: 80,
@@ -110,8 +139,8 @@ class ProductDetails extends StatelessWidget {
                         ),
                       ),
                     )
-                        
-    
+
+
                   ],
                 ),
               ),
@@ -120,85 +149,93 @@ class ProductDetails extends StatelessWidget {
               height: 8,
             ),
             Expanded(
-              child: Container(
-                  color: Colors.grey[300],
-                  width: MediaQuery.of(context).size.width ,
-                  height: MediaQuery.of(context).size.height ,
-                  child: GridView.count(
-                    mainAxisSpacing: 8,
-                    crossAxisCount: 7,
-                    children: List.generate(100, (index) {
-                  return Card(
-                    margin: EdgeInsets.fromLTRB(7, 7, 5, 7),
-                    child: InkWell(
-                      onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (builder)=>CardScreen()));
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          AspectRatio(
-                            aspectRatio: 18.0 / 11.0,
-                            child: Image.asset(
-                              'assets/images/google-logo.png',
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.fromLTRB(10.0, 10, 0.0, 0.0),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Center(
-                                  child: Text(
-                                    "Google",
-                                    style: TextStyle(
-                                        fontFamily: 'Raleway',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.0),
-                                    maxLines: 1,
+                child: FutureBuilder(
+                    future: getAllProducts(),
+                    builder: (context, snapshot){
+                      return GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 8),
+                        shrinkWrap: true,
+                        itemCount: allProductList.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            margin: EdgeInsets.fromLTRB(7, 7, 5, 7),
+                            child: InkWell(
+                              onTap: () {
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (builder) => CardScreen(catProductModel: allProductList[index], index: index,)));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  AspectRatio(
+                                    aspectRatio: 18.0 / 11.0,
+                                    child: Image.network(
+                                      allProductList[index].image.toString(),
+                                      fit: BoxFit.scaleDown,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding:
+                                    EdgeInsets.fromLTRB(10.0, 10, 0.0, 0.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Center(
+                                          child: Text(
+                                            allProductList[index].name.toString(),
+                                            style: TextStyle(
+                                                fontFamily: 'Raleway',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14.0),
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                    EdgeInsets.fromLTRB(10.0, 10, 10.0, 0.0),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          allProductList[index].dineprice.toString() + "/pcs",
+                                          style: TextStyle(
+                                              fontFamily: 'Raleway',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14.0),
+                                          maxLines: 1,
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          "Stock : ${allProductList[index].stockInHand.toString()}",
+                                          style: TextStyle(
+                                              fontFamily: 'Raleway',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14.0),
+                                          maxLines: 1,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.fromLTRB(10.0, 10, 10.0, 0.0),
-                            child: Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Price/pcs",
-                                  style: TextStyle(
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.0),
-                                  maxLines: 1,
-                                ),
-                                Spacer(),
-                                Text(
-                                  "Stock:2",
-                                  style: TextStyle(
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.0),
-                                  maxLines: 1,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
- 
-                    }),
-                  )),
-            ),
+                          );
+
+
+                        },
+                      );
+
+                    }
+                )
+
+            )
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:http/http.dart' as http;
 
 class AddTable extends StatefulWidget {
   const AddTable({ Key? key }) : super(key: key);
@@ -12,7 +13,8 @@ class _AddTableState extends State<AddTable> {
 
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController controller = TextEditingController();
+  TextEditingController _floorController = TextEditingController();
+  TextEditingController _peopleController = TextEditingController();
   String initialCountry = 'SA';
   PhoneNumber number = PhoneNumber(isoCode: 'SA');
   void getPhoneNumber(String phoneNumber) async {
@@ -24,11 +26,32 @@ class _AddTableState extends State<AddTable> {
     });
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
+  String tableShape = '';
+  String tableShapeName = 'Select One';
+  String tableColor = '';
+
+  String currentDate = DateTime.now().toString();
+
+  Future<void> addTable() async {
+
+    var response = await http.post(Uri.parse('https://api.woga-pos.com/insert_table.php'), body: {
+      'shape': tableShape.toString(),
+      'floor': _floorController.text.trim(),
+      'people': _peopleController.text.trim(),
+      'color': tableColor.toString(),
+      'created_at': currentDate.toString(),
+      'updated_at': currentDate.toString(),
+    });
+
+    if(response.statusCode == 200){
+      print("success");
+    }
+    else{
+      print("failed");
+
+    }
   }
+
   @override
   Widget build(BuildContext context) {
 
@@ -54,7 +77,6 @@ class _AddTableState extends State<AddTable> {
                 Row(
                   children: [
                     Expanded(
-
                       child: Container(
                         width: MediaQuery.of(context).size.width / 3,
                         height: 50,
@@ -156,16 +178,22 @@ class _AddTableState extends State<AddTable> {
                               child: Padding(
                                 padding:
                                 const EdgeInsets.only(left: 8, top: 12),
-                                child: DropdownButton<String>(
+                                child: DropdownButton(
+                                  isExpanded: true,
                                   hint: Text("Select table Shape"),
-                                  //value: "Select one",
-                                  items: <String>['Circular', 'Ractengular',].map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
+                                  // value: tableShapeName,
+                                  items: ['Circular', 'Rectangular','Square'].map((value) {
+                                    return DropdownMenuItem(
+                                      value: value.toString(),
+                                      child: Text(value.toString()),
                                     );
                                   }).toList(),
-                                  onChanged: (_) {},
+                                  onChanged: (val) {
+                                    setState(() {
+                                      tableShape = val.toString();
+                                      print(tableShape);
+                                    });
+                                  },
                                 )
                               ),
                             ),
@@ -186,6 +214,11 @@ class _AddTableState extends State<AddTable> {
                                 padding:
                                 const EdgeInsets.only(left: 8, top: 12),
                                 child: TextFormField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      _floorController.text = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                     hintText: "Enter floor no",
                                     focusedBorder: UnderlineInputBorder(
@@ -215,6 +248,11 @@ class _AddTableState extends State<AddTable> {
                                 padding:
                                 const EdgeInsets.only(left: 8, top: 12),
                                 child:  TextFormField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      _peopleController.text = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                     hintText: "Enter No of People",
                                     focusedBorder: UnderlineInputBorder(
@@ -251,7 +289,11 @@ class _AddTableState extends State<AddTable> {
                                       child: Text(value),
                                     );
                                   }).toList(),
-                                  onChanged: (_) {},
+                                  onChanged: (val) {
+                                    setState(() {
+                                      tableColor = val.toString();
+                                    });
+                                  },
                                 ),
 
 
@@ -263,15 +305,21 @@ class _AddTableState extends State<AddTable> {
                         ],
                       ),
                       SizedBox(height:16),
-                      Container(
-                        width: 400,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
+                      GestureDetector(
+                        onTap: () {
+                          addTable();
+                          Navigator.pop(context, false);
+                        },
+                        child: Container(
+                          width: 400,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
 
-                          borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Center(child: Text("Add Table",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.bold),)),
                         ),
-                        child: Center(child: Text("Add Table",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.bold),)),
                       )
                     ],
                   ),

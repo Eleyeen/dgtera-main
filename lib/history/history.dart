@@ -372,9 +372,9 @@ String selectedValue = "Session";
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                             width: 180,
                             // ignore: deprecated_member_use
-                            child: FlatButton(
+                            child: ElevatedButton(
               onPressed: () => {},
-              color: Colors.white,
+              // color: Colors.white,
               
               child: Row( 
                 mainAxisAlignment: MainAxisAlignment.center,

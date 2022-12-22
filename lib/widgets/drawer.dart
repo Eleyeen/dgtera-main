@@ -1,13 +1,39 @@
+import 'package:dgtera_tablet_app/Provider/UserLogProvider.dart';
 import 'package:dgtera_tablet_app/pages/login.dart';
 import 'package:dgtera_tablet_app/pages/pincode.dart';
 import 'package:dgtera_tablet_app/utilities/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MyDrawer extends StatelessWidget {
+
+  Future<void> userLogout(String userId, String username) async {
+    final response = await post(Uri.parse("https://api.woga-pos.com/insert_userslogouttime.php",),
+        body: {
+          'user_id': userId,
+          'username': username,
+          'logouttime': DateFormat.Hm().format(DateTime.now()).toString(),
+        });
+
+    if(response.statusCode == 200){
+      print(response.body);
+
+      //provider
+      // Provider.of<UserLogProvider>(context).name = response.body,
+      print("UserLog inserted successfully");
+    }
+    else{
+      print("UserLog not inserted");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-     dialog() {
+    var userLog = Provider.of<UserLogProvider>(context,listen: false);
+    dialog() {
    return showDialog(
       builder: (BuildContext context) {
         return Positioned(
@@ -181,7 +207,7 @@ class MyDrawer extends StatelessWidget {
             ),
             GestureDetector(
               onTap:(){
-               Navigator.pushNamed(context, MyRoutes.setting); 
+               Navigator.pushNamed(context, MyRoutes.setting);
               },
               child: Container(
                 color: Colors.grey[400],
@@ -222,7 +248,7 @@ class MyDrawer extends StatelessWidget {
   builder: (BuildContext context) {
     return SimpleDialog(
       insetPadding: EdgeInsets.only(bottom: 1000),
-      
+
       titlePadding: EdgeInsets.zero,
       contentPadding: EdgeInsets.zero,
       children: [
@@ -272,8 +298,8 @@ class MyDrawer extends StatelessWidget {
               color: Color(0xfffff2f3),
               child: ListTile(
                   leading: Icon(
-                    CupertinoIcons.news,
-                    color: Color(0xfffff2f3),
+                    CupertinoIcons.person,
+                    color: Colors.grey,
                   ),
                   title: Text(
                     "User",
@@ -283,6 +309,26 @@ class MyDrawer extends StatelessWidget {
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   )),
+            ),
+            GestureDetector(
+              onTap: (){
+                Navigator.pushNamed(context, MyRoutes.tax);
+              },
+              child: Container(
+                child: ListTile(
+                    leading: Icon(
+                      Icons.safety_divider,
+                      color: Colors.grey,
+                    ),
+                    title: Text(
+                      "Tax",
+                      textScaleFactor: 1.2,
+                      style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -304,6 +350,7 @@ class MyDrawer extends StatelessWidget {
             ),
             GestureDetector(
               onTap: (){
+                userLogout(userLog.id, userLog.name);
                 Navigator.pushReplacementNamed(context, '/');
                 },
               child: ListTile(
@@ -317,8 +364,8 @@ class MyDrawer extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600], fontSize: 20),
                   )),
             ),
-            
-            
+
+
           ],
         ),
       ),

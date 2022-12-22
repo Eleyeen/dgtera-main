@@ -1,4 +1,7 @@
+import 'package:dgtera_tablet_app/Provider/UserLogProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ChangePinCode extends StatelessWidget {
 
@@ -6,8 +9,29 @@ class ChangePinCode extends StatelessWidget {
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
   final TextEditingController _oldPass = TextEditingController();
+
+  Future<void> changePassword(String userId, String password) async {
+    final response = await http.post(Uri.parse("https://api.woga-pos.com/update_userpass.php",),
+        body: {
+          'id': userId,
+          'password': password,
+        });
+
+    if(response.statusCode == 200){
+      print(response.body);
+
+      print("User Password changed successfully");
+    }
+    else{
+      print("User Password not Changed");
+    }
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    var userPassword = Provider.of<UserLogProvider>(context,listen: false);
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -184,10 +208,10 @@ class ChangePinCode extends StatelessWidget {
                                             height: 90,
                                             padding: const EdgeInsets.symmetric(horizontal: 30,
                                                 vertical: 15),
-                                            child: FlatButton(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 5, horizontal: 100),
-                                              shape: StadiumBorder(),
+                                            child: ElevatedButton(
+                                              // padding: EdgeInsets.symmetric(
+                                              //     vertical: 5, horizontal: 100),
+                                              // shape: StadiumBorder(),
                                               onPressed: () {
                                                 // _formSubmit();
                                               },
@@ -199,7 +223,7 @@ class ChangePinCode extends StatelessWidget {
                                                   fontWeight: FontWeight.w700,
                                                 ),
                                               ),
-                                              color: Colors.blue,
+                                              // color: Colors.blue,
                                               
                                             ),
                                           ),
