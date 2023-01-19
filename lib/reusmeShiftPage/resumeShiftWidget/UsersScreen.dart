@@ -1,23 +1,22 @@
 import 'dart:convert';
 
+import 'package:dgtera_tablet_app/Models/LoginPinModel.dart';
 import 'package:dgtera_tablet_app/Models/ShowCustomerModel.dart';
-import 'package:dgtera_tablet_app/extra.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/addCostumer.dart';
-import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customerTable.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Customer extends StatefulWidget {
-  Customer({Key? key}) : super(key: key);
+class UserScreen extends StatefulWidget {
+  UserScreen({Key? key}) : super(key: key);
 
   @override
-  State<Customer> createState() => _CustomerState();
+  State<UserScreen> createState() => _UserScreenState();
 }
 
-class _CustomerState extends State<Customer> {
-  List<ShowCustomerModel> showCustomerList = [];
+class _UserScreenState extends State<UserScreen> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -26,15 +25,15 @@ class _CustomerState extends State<Customer> {
         context, MaterialPageRoute(builder: (context) => Customer()));
   }
 
-  customerUpdate(String id, String name, String phone, String address) async {
+  customerUpdate(String id, String name, String role, String password) async {
     try {
       Response resposne = await post(
-          Uri.parse('https://api.woga-pos.com/update_customer.php'),
+          Uri.parse('https://api.woga-pos.com/update_user.php'),
           body: {
             'id': id,
             'name': name,
-            'phone': phone,
-            'address': address,
+            'role': role,
+            'password': password,
           });
 
       var data = jsonDecode(resposne.body);
@@ -56,7 +55,7 @@ class _CustomerState extends State<Customer> {
   customerdelte(String id) async {
     try {
       Response resposne = await post(
-          Uri.parse('https://api.woga-pos.com/delete_customer.php'),
+          Uri.parse('https://api.woga-pos.com/delete_user.php'),
           body: {
             'id': id,
           });
@@ -77,20 +76,23 @@ class _CustomerState extends State<Customer> {
     }
   }
 
-  Future<List<ShowCustomerModel>> showCustomer() async {
+  List<LoginPinModel> showCustomerList = [];
+
+  var data;
+  Future<List<LoginPinModel>> getUser() async {
     final response =
-        await get(Uri.parse("https://api.woga-pos.com/show_customers.php"));
-    var data = jsonDecode(response.body.toString());
+        await get(Uri.parse('https://api.woga-pos.com/selectuser.php'));
+    data = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
       showCustomerList.clear();
       for (Map i in data) {
-        showCustomerList.add(ShowCustomerModel.fromJson(i));
+        showCustomerList.add(LoginPinModel.fromJson(i));
       }
       return showCustomerList;
+    } else {
+      return showCustomerList;
     }
-    return showCustomerList;
   }
-  // String? name = '';
 
   List<dynamic> itemsAll = [];
 
@@ -172,7 +174,7 @@ class _CustomerState extends State<Customer> {
             elevation: 0,
             iconTheme: IconThemeData(color: Colors.black),
             title: Text(
-              "Customers",
+              "Users",
               style: TextStyle(color: Colors.black),
             ),
             centerTitle: true,
@@ -242,10 +244,10 @@ class _CustomerState extends State<Customer> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) => AddCostomer()));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (builder) => AddCostomer()));
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -253,7 +255,7 @@ class _CustomerState extends State<Customer> {
                           decoration: BoxDecoration(color: Colors.blue),
                           child: Center(
                             child: Text(
-                              "Add Customer",
+                              "Add User",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -288,7 +290,7 @@ class _CustomerState extends State<Customer> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8),
                                 child: Text(
-                                  "Customer Name",
+                                  "User Name",
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -309,7 +311,7 @@ class _CustomerState extends State<Customer> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8, top: 12),
                           child: Text(
-                            "Phone",
+                            "Role",
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -317,24 +319,25 @@ class _CustomerState extends State<Customer> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 2),
-                      Expanded(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          decoration: BoxDecoration(color: Colors.grey),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 12),
-                            child: Text(
-                              "Address",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // SizedBox(width: 2),
+                      // Expanded(
+                      //   child: Container(
+                      //     width: MediaQuery.of(context).size.width,
+                      //     height: 50,
+                      //     decoration: BoxDecoration(color: Colors.grey),
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.only(left: 8, top: 12),
+                      //       child: Text(
+                      //         "Address",
+                      //         style: TextStyle(
+                      //             fontSize: 20,
+                      //             fontWeight: FontWeight.bold,
+                      //             color: Colors.white),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+
                       SizedBox(width: 2),
                       Expanded(
                         child: Container(
@@ -358,7 +361,7 @@ class _CustomerState extends State<Customer> {
                   Expanded(
                       child: showListAll
                           ? FutureBuilder(
-                              future: showCustomer(),
+                              future: getUser(),
                               builder: (context, snapshot) {
                                 return ListView.separated(
                                     separatorBuilder: (context, index) {
@@ -446,7 +449,7 @@ class _CustomerState extends State<Customer> {
                                                     left: 8, top: 12),
                                                 child: Text(
                                                   showCustomerList[index]
-                                                      .phone
+                                                      .role
                                                       .toString(),
                                                   style: TextStyle(
                                                       fontSize: 20,
@@ -454,30 +457,30 @@ class _CustomerState extends State<Customer> {
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(width: 2),
-                                            Expanded(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: 50,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8, top: 12),
-                                                  child: Text(
-                                                    showCustomerList[index]
-                                                        .address
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                            // SizedBox(width: 2),
+                                            // Expanded(
+                                            //   child: Container(
+                                            //     width: MediaQuery.of(context)
+                                            //         .size
+                                            //         .width,
+                                            //     height: 50,
+                                            //     decoration: BoxDecoration(
+                                            //         color: Colors.white),
+                                            //     child: Padding(
+                                            //       padding: const EdgeInsets.only(
+                                            //           left: 8, top: 12),
+                                            //       child: Text(
+                                            //         showCustomerList[index]
+                                            //             .address
+                                            //             .toString(),
+                                            //         style: TextStyle(
+                                            //             fontSize: 20,
+                                            //             color: Colors.black),
+                                            //       ),
+                                            //     ),
+                                            //   ),
+                                            // ),
+
                                             SizedBox(width: 2),
                                             GestureDetector(
                                               onTap: () {
@@ -491,10 +494,10 @@ class _CustomerState extends State<Customer> {
                                                         .name
                                                         .toString(),
                                                     showCustomerList[index]
-                                                        .phone
+                                                        .role
                                                         .toString(),
                                                     showCustomerList[index]
-                                                        .address
+                                                        .password
                                                         .toString());
                                               },
                                               child: Expanded(
@@ -561,7 +564,7 @@ class _CustomerState extends State<Customer> {
                                     });
                               })
                           : FutureBuilder(
-                              future: showCustomer(),
+                              future: getUser(),
                               builder: (context, snapshot) {
                                 return ListView.separated(
                                     separatorBuilder: (context, index) {
@@ -639,7 +642,7 @@ class _CustomerState extends State<Customer> {
                                                     left: 8, top: 12),
                                                 child: Text(
                                                   showCustomerList[index]
-                                                      .phone
+                                                      .role
                                                       .toString(),
                                                   style: TextStyle(
                                                       fontSize: 20,
@@ -647,30 +650,29 @@ class _CustomerState extends State<Customer> {
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(width: 2),
-                                            Expanded(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: 50,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8, top: 12),
-                                                  child: Text(
-                                                    showCustomerList[index]
-                                                        .address
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                            // SizedBox(width: 2),
+                                            // Expanded(
+                                            //   child: Container(
+                                            //     width: MediaQuery.of(context)
+                                            //         .size
+                                            //         .width,
+                                            //     height: 50,
+                                            //     decoration: BoxDecoration(
+                                            //         color: Colors.white),
+                                            //     child: Padding(
+                                            //       padding: const EdgeInsets.only(
+                                            //           left: 8, top: 12),
+                                            //       child: Text(
+                                            //         showCustomerList[index]
+                                            //             .address
+                                            //             .toString(),
+                                            //         style: TextStyle(
+                                            //             fontSize: 20,
+                                            //             color: Colors.black),
+                                            //       ),
+                                            //     ),
+                                            //   ),
+                                            // ),
                                           ],
                                         ),
                                       );
@@ -715,7 +717,7 @@ class _CustomerState extends State<Customer> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Customer()));
+                                builder: (context) => UserScreen()));
                       },
                     ),
                     TextButton(
@@ -733,7 +735,7 @@ class _CustomerState extends State<Customer> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Customer()));
+                                    builder: (context) => UserScreen()));
                           },
                         );
                       },
@@ -749,8 +751,8 @@ class _CustomerState extends State<Customer> {
     );
   }
 
-  void dialogBox(String? customerid, String? customername,
-      String? customerphone, String? customeraddress) {
+  void dialogBox(String? customerid, String? username, String? userRole,
+      String? userPass) {
     showDialog(
       builder: (BuildContext context) {
         return Dialog(
@@ -761,7 +763,7 @@ class _CustomerState extends State<Customer> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  "Are You Sure to update Customer",
+                  "Are You Sure to update User",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20,
@@ -789,7 +791,7 @@ class _CustomerState extends State<Customer> {
                                 });
                               },
                               decoration: InputDecoration(
-                                hintText: customername,
+                                hintText: username,
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(color: Colors.black),
                                 ),
@@ -816,7 +818,7 @@ class _CustomerState extends State<Customer> {
                                 });
                               },
                               decoration: InputDecoration(
-                                hintText: customerphone,
+                                hintText: userRole,
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(color: Colors.black),
                                 ),
@@ -843,7 +845,7 @@ class _CustomerState extends State<Customer> {
                                 });
                               },
                               decoration: InputDecoration(
-                                hintText: customeraddress,
+                                hintText: userPass,
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(color: Colors.black),
                                 ),
@@ -877,7 +879,7 @@ class _CustomerState extends State<Customer> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Customer()));
+                                builder: (context) => UserScreen()));
                       },
                     );
                   },

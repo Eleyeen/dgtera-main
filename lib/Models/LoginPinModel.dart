@@ -10,6 +10,7 @@
 class LoginPinModel {
   LoginPinModel({
       String? id,
+      String? role,
       String? name, 
       String? email, 
       dynamic emailVerifiedAt, 
@@ -19,6 +20,7 @@ class LoginPinModel {
       String? updatedAt,}){
     _id = id as String;
     _name = name;
+    _role = role;
     _email = email;
     _emailVerifiedAt = emailVerifiedAt;
     _password = password;
@@ -29,6 +31,7 @@ class LoginPinModel {
 
   LoginPinModel.fromJson(dynamic json) {
     _id = json['id'];
+    _role = json['role'];
     _name = json['name'];
     _email = json['email'];
     _emailVerifiedAt = json['email_verified_at'];
@@ -39,6 +42,7 @@ class LoginPinModel {
   }
   String? _id;
   String? _name;
+  String? _role;
   String? _email;
   dynamic _emailVerifiedAt;
   String? _password;
@@ -48,6 +52,7 @@ class LoginPinModel {
 
   String? get id => _id;
   String? get name => _name;
+  String? get role => _role;
   String? get email => _email;
   dynamic get emailVerifiedAt => _emailVerifiedAt;
   String? get password => _password;
@@ -59,6 +64,7 @@ class LoginPinModel {
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['name'] = _name;
+    map['role'] = role;
     map['email'] = _email;
     map['email_verified_at'] = _emailVerifiedAt;
     map['password'] = _password;

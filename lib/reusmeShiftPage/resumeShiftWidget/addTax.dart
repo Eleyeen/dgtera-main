@@ -4,30 +4,24 @@ import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-
 class AddTax extends StatefulWidget {
-  const AddTax({ Key? key }) : super(key: key);
+  const AddTax({Key? key}) : super(key: key);
 
   @override
   State<AddTax> createState() => _AddTaxState();
 }
 
 class _AddTaxState extends State<AddTax> {
-
-  DBHelper dbHelper = DBHelper();
-
   TextEditingController _taxController = TextEditingController();
 
   double? taxNum;
-
 
   @override
   Widget build(BuildContext context) {
     final tax = Provider.of<TaxProvider>(context, listen: false);
     final _formKey = GlobalKey<FormState>();
     return Scaffold(
-      resizeToAvoidBottomInset:false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
@@ -47,12 +41,13 @@ class _AddTaxState extends State<AddTax> {
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Container(
-                  width: MediaQuery.of(context).size.width /2,
+                  width: MediaQuery.of(context).size.width / 2,
                   height: 50,
-                  decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(8))),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
                   child: Padding(
-                    padding:
-                    const EdgeInsets.only(left: 8, top: 12),
+                    padding: const EdgeInsets.only(left: 8, top: 12),
                     child: TextFormField(
                       onChanged: (val) {
                         _taxController.text = val;
@@ -65,8 +60,7 @@ class _AddTaxState extends State<AddTax> {
                           borderSide: BorderSide(color: Colors.black),
                         ),
                       ),
-                      style: TextStyle(
-                          fontSize: 20, color: Colors.black),
+                      style: TextStyle(fontSize: 20, color: Colors.black),
                     ),
                   ),
                 ),
@@ -80,21 +74,24 @@ class _AddTaxState extends State<AddTax> {
                     tax.setData(taxNum!);
                   });
                   Navigator.pop(context);
-                        },
+                },
                 child: Container(
                   width: 400,
                   height: 70,
                   decoration: BoxDecoration(
                     color: Colors.blue,
-
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Center(child: Text("Add Tax",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.bold),)),
+                  child: Center(
+                      child: Text(
+                    "Add Tax",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
+                  )),
                 ),
               ),
-
-
-
             ],
           ),
         ),

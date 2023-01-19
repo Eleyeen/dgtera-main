@@ -53,10 +53,10 @@ class _ProductState extends State<Product> {
   }
 
   Future<List<CatProductModel>> getAllProducts() async {
-    // final response =
-    //     await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
-    final response = await get(Uri.parse(
-        'https://api.woga-pos.com/show_product_individual.php?category_id=3'));
+    final response =
+        await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
+    // final response = await get(Uri.parse(
+    //     'https://api.woga-pos.com/show_product_individual.php?category_id=3'));
     data2 = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
       allProductList.clear();
@@ -70,10 +70,10 @@ class _ProductState extends State<Product> {
   }
 
   Future<List<CatProductModel>> getProductsByCat() async {
-    // final response = await get(Uri.parse(
-    //     'https://api.woga-pos.com/show_product_individual.php?category_id=3'));
-    final response =
-        await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
+    final response = await get(Uri.parse(
+        'https://api.woga-pos.com/show_product_individual.php?category_id=${_selectedCategory}'));
+    // final response =
+    //     await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
     data1 = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
       catProductList.clear();
@@ -192,10 +192,37 @@ class _ProductState extends State<Product> {
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
                   children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () {
+                          print('clickk All');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (builder) => ResumeScreen()));
+                        },
+                        child: Container(
+                          color: Colors.white,
+                          height: 40,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10.0, left: 10, right: 15),
+                            child: Text(
+                              'All Items',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[500]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Container(
                       color: Colors.white,
                       height: 40,
-                      width: MediaQuery.of(context).size.width * .20,
+                      width: MediaQuery.of(context).size.width * .15,
                       child: FutureBuilder(
                           future: getCategories(),
                           builder: (context, snapshot) {
@@ -206,7 +233,7 @@ class _ProductState extends State<Product> {
                                 hint: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Search by Category',
+                                    'Search By Category',
                                     style: TextStyle(
                                         color: Colors.grey[500],
                                         fontSize: 16,
@@ -215,8 +242,8 @@ class _ProductState extends State<Product> {
                                   ),
                                 ), // Not necessary for Option 1
                                 // value: 'Fruits',
-                                // value: _selectedCategory == 'all'
-                                //     ? 'Fruits'
+                                // value: _selectedCategory.toString() == ''
+                                //     ? 'Search By Category'
                                 //     : _selectedCategory,
                                 onChanged: (newValue) {
                                   setState(() {
@@ -225,7 +252,7 @@ class _ProductState extends State<Product> {
                                     print("sassssssssss" + _selectedCategory);
                                     print('lengggggg${catProductList.length}');
                                     print(
-                                        'lengggggppppppppppppppppppppppppppg${allProductList.length}');
+                                        'lengggggppppppppppppppppppppppppppg${catProductList.length}');
                                   });
                                 },
                                 items: catList.map((catagory) {
@@ -233,7 +260,7 @@ class _ProductState extends State<Product> {
                                     enabled: true,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text(catagory.id.toString()),
+                                      child: Text(catagory.name.toString()),
                                     ),
                                     value: catagory.id,
                                   );
@@ -624,7 +651,7 @@ class _ProductState extends State<Product> {
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 5),
                                 shrinkWrap: true,
-                                itemCount: catProductList.length,
+                                itemCount: items.length,
                                 itemBuilder: (context, index) {
                                   return Card(
                                     margin: EdgeInsets.fromLTRB(7, 7, 5, 7),
@@ -661,9 +688,7 @@ class _ProductState extends State<Product> {
                                               children: <Widget>[
                                                 Center(
                                                   child: Text(
-                                                    catProductList[index]
-                                                        .name
-                                                        .toString(),
+                                                    items[index].toString(),
                                                     style: TextStyle(
                                                         fontFamily: 'Raleway',
                                                         fontWeight:

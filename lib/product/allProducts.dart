@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 class ProductDetails extends StatefulWidget {
-  const ProductDetails({ Key? key }) : super(key: key);
+  const ProductDetails({Key? key}) : super(key: key);
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
@@ -21,8 +21,8 @@ class _ProductDetailsState extends State<ProductDetails> {
   var data;
 
   Future<List<CatProductModel>> getAllProducts() async {
-    final response = await get(Uri.parse(
-        'https://api.woga-pos.com/show_products.php'));
+    final response =
+        await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
     data = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
       allProductList.clear();
@@ -34,7 +34,6 @@ class _ProductDetailsState extends State<ProductDetails> {
       return allProductList;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         )),
                     // SizedBox(width: 8,),
                     Container(
-                      width: MediaQuery.of(context).size.width /1.9,
+                      width: MediaQuery.of(context).size.width / 1.9,
                       height: 40,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -89,13 +88,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                           Icons.search,
                           color: Colors.white,
                         )),
-                        SizedBox(width:8),
-                        Expanded(
+                    SizedBox(width: 8),
+                    Expanded(
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddProduct()),
+                            MaterialPageRoute(
+                                builder: (context) => AddProduct()),
                           );
                         },
                         child: Container(
@@ -114,10 +114,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8,),
-                      Expanded(
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Catogory()),
@@ -139,8 +141,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                         ),
                       ),
                     )
-
-
                   ],
                 ),
               ),
@@ -151,7 +151,7 @@ class _ProductDetailsState extends State<ProductDetails> {
             Expanded(
                 child: FutureBuilder(
                     future: getAllProducts(),
-                    builder: (context, snapshot){
+                    builder: (context, snapshot) {
                       return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 8),
@@ -162,11 +162,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                             margin: EdgeInsets.fromLTRB(7, 7, 5, 7),
                             child: InkWell(
                               onTap: () {
-
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (builder) => CardScreen(catProductModel: allProductList[index], index: index,)));
+                                        builder: (builder) => CardScreen(
+                                              catProductModel:
+                                                  allProductList[index],
+                                              index: index,
+                                            )));
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,19 +177,22 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   AspectRatio(
                                     aspectRatio: 18.0 / 11.0,
                                     child: Image.network(
-                                      allProductList[index].image.toString(),
+                                      'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
                                       fit: BoxFit.scaleDown,
                                     ),
                                   ),
                                   Padding(
                                     padding:
-                                    EdgeInsets.fromLTRB(10.0, 10, 0.0, 0.0),
+                                        EdgeInsets.fromLTRB(10.0, 10, 0.0, 0.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Center(
                                           child: Text(
-                                            allProductList[index].name.toString(),
+                                            allProductList[index]
+                                                .name
+                                                .toString(),
                                             style: TextStyle(
                                                 fontFamily: 'Raleway',
                                                 fontWeight: FontWeight.bold,
@@ -198,13 +204,17 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                    EdgeInsets.fromLTRB(10.0, 10, 10.0, 0.0),
+                                    padding: EdgeInsets.fromLTRB(
+                                        10.0, 10, 10.0, 0.0),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          allProductList[index].dineprice.toString() + "/pcs",
+                                          allProductList[index]
+                                                  .dineprice
+                                                  .toString() +
+                                              "/pcs",
                                           style: TextStyle(
                                               fontFamily: 'Raleway',
                                               fontWeight: FontWeight.bold,
@@ -227,15 +237,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                             ),
                           );
-
-
                         },
                       );
-
-                    }
-                )
-
-            )
+                    }))
           ],
         ),
       ),

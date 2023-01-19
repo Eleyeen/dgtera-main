@@ -6,17 +6,20 @@
 
 class UserLogModel {
   UserLogModel({
-      String? id, 
-      String? username, 
-      String? date, 
-      String? logintime, 
-      String? logouttime,}){
+    String? id,
+    String? username,
+    String? date,
+    String? created_at,
+    String? logintime,
+    String? logouttime,
+  }) {
     _id = id;
     _username = username;
     _date = date;
     _logintime = logintime;
     _logouttime = logouttime;
-}
+    _created_at = created_at;
+  }
 
   UserLogModel.fromJson(dynamic json) {
     _id = json['id'];
@@ -30,6 +33,7 @@ class UserLogModel {
   String? _date;
   String? _logintime;
   String? _logouttime;
+  String? _created_at;
 
   String? get id => _id;
   String? get username => _username;
@@ -44,7 +48,7 @@ class UserLogModel {
     map['date'] = _date;
     map['logintime'] = _logintime;
     map['logouttime'] = _logouttime;
+    map['created_at'] = _created_at;
     return map;
   }
-
 }

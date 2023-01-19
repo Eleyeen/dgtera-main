@@ -130,6 +130,8 @@ class _LoginState extends State<Login> {
     prefs.setString(
         'logintime', DateFormat.Hm().format(DateTime.now()).toString());
     prefs.setString('username', _selectedUser!.name.toString());
+    prefs.setString('userId', _selectedUser!.id.toString());
+    prefs.setString('oldpassword', pinSelected.toString());
 
     // final response = await post(
     //     Uri.parse("https://api.woga-pos.com/insert_userslog.php"),
@@ -395,6 +397,7 @@ class _LoginState extends State<Login> {
                                       onPressed: () async {
                                         print('pin : $pinSelected');
                                         print('Name :  ${_selectedUser!.name}');
+
                                         final res = await login(
                                             pinSelected.toString(),
                                             _selectedUser!.name!);
@@ -414,8 +417,7 @@ class _LoginState extends State<Login> {
                                           print("result not ok");
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                            content:
-                                                Text("Plzz Check your Pin"),
+                                            content: Text("Your Pin in Wrong"),
                                           ));
                                         }
                                       },

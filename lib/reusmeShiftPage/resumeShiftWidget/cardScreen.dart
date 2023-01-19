@@ -44,12 +44,8 @@ class _CardScreenState extends State<CardScreen> {
     color: Colors.orange,
   );
   TextEditingController noteController = TextEditingController();
-  TextEditingController discountController =
-      TextEditingController(text: 0.toInt().toString());
+  TextEditingController discountController = TextEditingController();
 
-
-
-    
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,16 +120,18 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   countItem() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: [
-              Container(
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
                   height: 40,
                   width: 100,
                   decoration: BoxDecoration(
@@ -141,98 +139,97 @@ class _CardScreenState extends State<CardScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(4))),
                   child: Center(
                     child: Text(
-                      "Void",
+                      "Back",
                       style: TextStyle(color: Colors.white),
                     ),
                   )),
-              // SizedBox(width: 8,),
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: Container(
-                    width: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Center(
-                        child: Text(
-                      widget.catProductModel.name.toString().toUpperCase(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.grey[600]),
-                    ))),
-              ),
-              Container(
-                width: 100,
-                height: 40,
-                child: Center(
-                    child: Text("Quantity:",
-                        style:
-                            TextStyle(fontSize: 20, color: Colors.grey[600]))),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    itemcount == 1
-                        ? print("not decrementing anymore")
-                        : itemcount = itemcount - 1;
-                  });
-                },
-                child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Center(
-                        child: Text(
-                      "-",
-                      style: TextStyle(fontSize: 40, color: Colors.white),
-                    ))),
-              ),
+            ),
+            // SizedBox(width: 8,),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Center(
+                      child: Text(
+                    widget.catProductModel.name.toString().toUpperCase(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.grey[600]),
+                  ))),
+            ),
+            Container(
+              width: 100,
+              height: 40,
+              child: Center(
+                  child: Text("Quantity:",
+                      style: TextStyle(fontSize: 20, color: Colors.grey[600]))),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  itemcount == 1
+                      ? print("not decrementing anymore")
+                      : itemcount = itemcount - 1;
+                });
+              },
+              child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(
+                      child: Text(
+                    "-",
+                    style: TextStyle(fontSize: 40, color: Colors.white),
+                  ))),
+            ),
 
-              Container(
-                height: 40,
-                width: 70,
-                child: Center(
-                    child: Text(
-                  "$itemcount",
-                  style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
-                )),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    itemcount = itemcount + 1;
-                  });
-                },
-                child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Center(
-                        child: Text(
-                      "+",
-                      style: TextStyle(fontSize: 40, color: Colors.white),
-                    ))),
-              ),
-              SizedBox(
-                width: 80,
-              ),
-              Expanded(
-                child: Container(
-                  width: 100,
-                  height: 40,
-                  // ignore: deprecated_member_use
-                  child: ElevatedButton(onPressed: () {}, child: Text("New")),
-                ),
-              ),
-            ],
-          ),
+            Container(
+              height: 40,
+              width: 70,
+              child: Center(
+                  child: Text(
+                "$itemcount",
+                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+              )),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  itemcount = itemcount + 1;
+                });
+              },
+              child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(
+                      child: Text(
+                    "+",
+                    style: TextStyle(fontSize: 40, color: Colors.white),
+                  ))),
+            ),
+            SizedBox(
+              width: 80,
+            ),
+            // Expanded(
+            //   child: Container(
+            //     width: 100,
+            //     height: 40,
+            //     // ignore: deprecated_member_use
+            //     child: ElevatedButton(onPressed: () {}, child: Text("New")),
+            //   ),
+            // ),
+          ],
         ),
       ),
     );
@@ -394,30 +391,30 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   doneButton() {
-    
+    print(
+        'doneeeeeeeeeeeeeeeeeeeeeee prrrrrrrrrinttttttttttttttttttttttttttttttttttt');
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 45, 0, 8),
         child: GestureDetector(
           onTap: () async {
             double? dis = double.parse(discountController.text.toString());
-
             double totalPrice =
                 double.parse(widget.catProductModel.dineprice.toString()) *
                     itemcount;
-
             double disPrice = totalPrice * dis / 100;
             double finalPriceWithDiscount = totalPrice - disPrice;
             dis = finalPriceWithDiscount;
 
             if (selectedItems.isNotEmpty) {
-              print("existing item in list is $selectedItems");
-              var existingiteminList = await selectedItems.firstWhere(
+              print("existing itemmmmmmmmmmmmmmmmmm in list is $selectedItems");
+              var existingiteminList = selectedItems.firstWhere(
                   (itemToCheck) =>
                       itemToCheck.foodName == widget.catProductModel.name,
                   orElse: () => Item(
                       id: widget.index!,
-                      foodName: "",
+                      foodName: '',
                       foodPrice: double.parse(
                           widget.catProductModel.dineprice.toString()),
                       quantity: itemcount,
@@ -427,6 +424,8 @@ class _CardScreenState extends State<CardScreen> {
                       totalPrice: totalPrice));
               print("existing item in list is ${existingiteminList.foodName}");
               if (existingiteminList.foodName == widget.catProductModel.name) {
+                print(
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ifffffffffffffffff');
                 setState(() {
                   selectedItems[widget.index!].discount =
                       selectedItems[widget.index!].discount! -
@@ -455,8 +454,11 @@ class _CardScreenState extends State<CardScreen> {
                 print('Already exists!');
                 Navigator.push(context,
                     MaterialPageRoute(builder: (builder) => ResumeScreen()));
+                print(
+                    'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  seconnnnnnnnddddddddddddddddddddddddddddddddd');
               } else {
-                print('Added!');
+                print(
+                    'Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! elseeeeeeeeeeeee');
                 setState(() async {
                   selectedItems.add(Item(
                       id: widget.index!,
@@ -474,13 +476,17 @@ class _CardScreenState extends State<CardScreen> {
                       MaterialPageRoute(builder: (builder) => ResumeScreen()));
                 });
               }
+
+              print(
+                  'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  frisssssssssssssssssssssssssttttttttttttt');
             } else {
-              print('Added!');
+              print('Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
               selectedItems.forEach((element) {
+                print('adddddd databaseeeeeee');
                 print(element.foodName);
               });
 
-              print(widget.catProductModel.name);
+              print('${widget.catProductModel.name}');
               setState(() {
                 selectedItems.add(Item(
                     id: widget.index!,
@@ -497,6 +503,8 @@ class _CardScreenState extends State<CardScreen> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (builder) => ResumeScreen()));
               });
+              print(
+                  'doneeeeeeeeeeeeeeeeeee adddddddddddddddddddddddddd elseeeeeeeeeeeeeeeeee   frisssssssssstttttttttttttttttttttt');
             }
           },
           child: Container(

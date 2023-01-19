@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dgtera_tablet_app/Models/UserLogModel.dart';
 import 'package:dgtera_tablet_app/Provider/UserLogProvider.dart';
+import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dgtera_tablet_app/utilities/routes.dart';
@@ -9,6 +10,7 @@ import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboredScreen extends StatefulWidget {
   DashboredScreen({
@@ -111,6 +113,32 @@ class _DashboredScreenState extends State<DashboredScreen> {
     });
 
     setState(() {});
+    Future<void> insertUserLog() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? logintime = prefs.getString('logintime');
+    String? username = prefs.getString('username');
+
+    print('usernameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee${username}');
+    print('logintimeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee${logintime}');
+
+    final response = await post(
+        Uri.parse("https://api.woga-pos.com/insert_userslog.php"),
+        body: {
+          'username': username,
+          // 'user_id': _selectedUser!.id,
+          'date': DateFormat.yMMMd().format(DateTime.now()).toString(),
+          'logintime': logintime,
+          'logouttime': DateFormat.Hm().format(DateTime.now()).toString()
+        });
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      print("UserLog inserted successfully");
+    } else {
+      print("UserLog not inserted");
+    }
+  }
+
 
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
@@ -169,17 +197,21 @@ class _DashboredScreenState extends State<DashboredScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 200,
-                            height: 80,
-                            padding: const EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color: Colors.white,
-                              image: DecorationImage(
-                                image: AssetImage("assets/images/woga.jpg"),
-                                fit: BoxFit.fill,
-                                scale: 1,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 18.0),
+                            child: Container(
+                              width: 200,
+                              height: 60,
+                              padding: const EdgeInsets.only(top: 0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                // color: Colors.white,
+                                image: DecorationImage(
+                                  image:
+                                      AssetImage("assets/images/woga-logo.png"),
+                                  fit: BoxFit.fill,
+                                  scale: 1,
+                                ),
                               ),
                             ),
                           ),
@@ -215,7 +247,7 @@ class _DashboredScreenState extends State<DashboredScreen> {
                                     builder: (context, snapshot) {
                                       return usersLogList[
                                                   usersLogList.length - 1]
-                                              .logintime
+                                              .logouttime
                                               .toString()
                                               .isEmpty
                                           ? Text(
@@ -223,10 +255,8 @@ class _DashboredScreenState extends State<DashboredScreen> {
                                               style: TextStyle(fontSize: 19),
                                             )
                                           : Text(
-                                              usersLogList[
-                                                      usersLogList.length - 1]
-                                                  .logintime
-                                                  .toString(),
+                                              "${usersLogList[usersLogList.length - 1].date.toString()}" +
+                                                  "    ${usersLogList[usersLogList.length - 1].logintime.toString()}",
                                               style: TextStyle(fontSize: 19),
                                             );
                                     }),
@@ -242,6 +272,7 @@ class _DashboredScreenState extends State<DashboredScreen> {
                                   children: [
                                     OutlinedButton(
                                       onPressed: () {
+                                        selectedItems.clear();
                                         Navigator.pushNamed(
                                             context, MyRoutes.resumeRoute);
                                       },

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dgtera_tablet_app/Models/InsertOrder.dart';
 import 'package:dgtera_tablet_app/Provider/DineInProvider.dart';
 import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
@@ -8,9 +10,17 @@ import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../Models/CatProductModel.dart';
+import '../../Models/paymentModel.dart';
 
 class PayNowScreen extends StatefulWidget {
+  String? customerName;
+
+  PayNowScreen({Key? key, this.customerName});
 
   @override
   _PayNowScreenState createState() => _PayNowScreenState();
@@ -26,44 +36,52 @@ class _PayNowScreenState extends State<PayNowScreen> {
     color: Colors.orange,
   );
 
+  String? customername;
+  String? username;
+  String? totalitem;
+
   TextEditingController cashpriceController = TextEditingController();
   TextEditingController creditpriceController = TextEditingController();
   TextEditingController splitinController = TextEditingController();
   TextEditingController voucherController = TextEditingController();
-  double? price=0;
-
-
+  double? price = 0;
 
   List<InsertOrder> orderList = [];
-  
-  // Future<void> insertOrder() async {
-  //   final response = await http.post(Uri.parse("https://api.woga-pos.com/insert_orders.php"),
-  //   body: {
-  //     'order_id': ,
-  //     'customer':,
-  //     'dates':,
-  //     'items': ,
-  //       'quantity': ,
-  //       'price':,
-  //       'discount':,
-  //       'voucher':,
-  //       'points':,
-  //       'notes':,
-  //       'payments_method':,
-  //       'users_name':,
-  //       'times':,
-  //       'pay_cash':,
-  //       'pay_card':,
-  //       });
-  //
-  //   if (response.statusCode == 200)
-  //     {
-  //       print("Success");
-  //     }
-  //   else{
-  //     print("Failed");
-  //   }
-  // }
+
+  var data1;
+  List<PaymentModel> catProductList = [];
+
+  Future<List<PaymentModel>> getProductsByCat() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    customername = prefs.getString('nameCus');
+    print(
+        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss${customername}");
+
+    final response =
+        await get(Uri.parse('https://api.woga-pos.com/payment_methods.php'));
+    // final response =
+    //     await get(Uri.parse('https://api.woga-pos.com/show_products.php'));
+    data1 = jsonDecode(response.body.toString());
+    if (response.statusCode == 200) {
+      catProductList.clear();
+      for (Map i in data1) {
+        catProductList.add(PaymentModel.fromJson(i));
+      }
+      return catProductList;
+    } else {
+      return catProductList;
+    }
+  }
+
+  double? getpricedetails() {
+    double totalprice = 0;
+    selectedItems.forEach((element) {
+      setState(() {
+        totalprice = (totalprice + (element.discount!));
+      });
+    });
+    return totalprice;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +93,16 @@ class _PayNowScreenState extends State<PayNowScreen> {
       drawer: MyDrawer(),
     );
   }
-  body(){
+
+  body() {
     final totalPrice = Provider.of<TaxProvider>(context, listen: false);
     final dineIn = Provider.of<DineInProvider>(context, listen: false);
 
     setState(() {
       creditpriceController.text = dineIn.credit.toString();
     });
+    double? totalPr = getpricedetails();
+
     return Row(
       children: [
         Padding(
@@ -91,64 +112,73 @@ class _PayNowScreenState extends State<PayNowScreen> {
             child: Column(
               children: [
                 // CustomerTable(),
-                    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      // crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => Customer()));
-          },
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                BorderRadius.all(Radius.circular(8))),
-            width: 210,
-            height: 45,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person_rounded),
-                  SizedBox(width: 8),
-                  Text("Costumer Name"),
-                ],
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 5,
-        ),
-        GestureDetector(
-          onTap: (){
-            // Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
-          },
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            width: 210,
-            height: 45,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.table_chart),
-                  SizedBox(width: 8),
-                  Text("Points [99]"),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
- 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => Customer()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(8))),
+                        width: 210,
+                        height: 45,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.person_rounded),
+                              SizedBox(width: 8),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Text("Customer"),
+                                    customername == ""
+                                        ? Text('select a customer')
+                                        : Text(customername.toString()),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.push(context, MaterialPageRoute(builder: (builder)=>TableWidget()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(8))),
+                        width: 210,
+                        height: 45,
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.table_chart),
+                              SizedBox(width: 8),
+                              Text("Points [99]"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
                 // SizedBox(
                 //   height: 8,
                 // ),
@@ -156,7 +186,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                 SizedBox(
                   height: 8,
                 ),
-                Expanded(child:CardDetail()),
+                Expanded(child: CardDetail()),
                 TotleDetail(),
                 // SizedBox(height: 20,),
                 // PayButton(),
@@ -186,12 +216,12 @@ class _PayNowScreenState extends State<PayNowScreen> {
                               borderRadius: BorderRadius.circular(30)),
                           child: Center(
                               child: Text(
-                                "${totalPrice.totalTax} SAR",
-                                style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold),
-                              )),
+                            "$totalPr. SAR",
+                            style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold),
+                          )),
                         ),
                         SizedBox(
                           height: 20,
@@ -206,121 +236,120 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                   // width: MediaQuery.of(context).size.width/4.3,
                                   // color: Colors.white,
                                   decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(16)),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16)),
                                   child: TextField(
                                     controller: cashpriceController,
                                     onChanged: (value) async {
                                       setState(() {
-                                        print("current cash is  ${dineIn.cash}");
-                                        if(cashpriceController.text.length > 0) {
+                                        print(
+                                            "current cash is  ${dineIn.cash}");
+                                        if (cashpriceController.text.length >
+                                            0) {
                                           dineIn.setCash(double.parse(value));
-                                          print("current if cash is  ${dineIn.cash}");
-                                          double creditPrice = totalPrice.totalTax! - dineIn.cash!.toDouble();
+                                          print(
+                                              "current if cash is  ${dineIn.cash}");
+                                          double creditPrice =
+                                              totalPrice.totalTax! -
+                                                  dineIn.cash!.toDouble();
                                           print(creditPrice);
                                           dineIn.setCredit(creditPrice);
-                                        }else{
-                                          print("current else cash is  ${dineIn.cash}");
+                                        } else {
+                                          print(
+                                              "current else cash is  ${dineIn.cash}");
                                           dineIn.setCredit(0.0);
-                                          print("current else credit is  ${dineIn.credit}");
+                                          print(
+                                              "current else credit is  ${dineIn.credit}");
                                         }
-
                                       });
-
                                     },
                                     decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 2),
-                                          ),
-                                          focusedBorder:OutlineInputBorder(
-                                            borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          labelStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black),
-                                          hintStyle: TextStyle(
-                                              color: Colors.grey.shade700,
-                                              fontSize: 15),
-                                          // icon: Icon(Icons.mail),                                          
-                                          hintText: 'Enter Cash Amount',
-                                          labelText: 'Cash',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade900,
-                                                width: 2),
-                            
-                                          )),
-                                            style:TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                          keyboardType:TextInputType.number,
-                               
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 2),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade900,
+                                              width: 2.0),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        labelStyle: TextStyle(
+                                            fontSize: 20, color: Colors.black),
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 15),
+                                        // icon: Icon(Icons.mail),
+                                        hintText: 'Enter Cash Amount',
+                                        labelText: 'Cash',
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade900,
+                                              width: 2),
+                                        )),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    keyboardType: TextInputType.number,
                                   )),
                             ),
-                      
-                            
-
                             SizedBox(
                               width: 10,
                             ),
-
                             Expanded(
                               child: Container(
                                   height: 60,
                                   // width: MediaQuery.of(context).size.width/4.3,
-                              
+
                                   decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(16)),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16)),
                                   child: TextField(
                                     controller: creditpriceController,
-                                    onChanged: (text){
+                                    onChanged: (text) {
                                       setState(() {
-                                          text =  dineIn.credit.toString();
+                                        text = dineIn.credit.toString();
                                       });
                                     },
-                                   readOnly: true,
-                                   decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 2),
-                                          ),
-                                          focusedBorder:OutlineInputBorder(
-                                            borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          labelStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black),
-                                          hintStyle: TextStyle(
-                                              color: Colors.grey.shade700,
-                                              fontSize: 15),
-                                          // icon: Icon(Icons.mail),                                          
-                                          hintText: 'Enter Credit Amount',
-                                          labelText: 'Credit',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade900,
-                                                width: 2),
-                                          )),
-                                           style:TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                          keyboardType:TextInputType.number,
-                               
-                            
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 2),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade900,
+                                              width: 2.0),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        labelStyle: TextStyle(
+                                            fontSize: 20, color: Colors.black),
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 15),
+                                        // icon: Icon(Icons.mail),
+                                        hintText: 'Enter Credit Amount',
+                                        labelText: 'Credit',
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          borderSide: BorderSide(
+                                              color: Colors.grey.shade900,
+                                              width: 2),
+                                        )),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    keyboardType: TextInputType.number,
                                   )),
                             ),
                           ],
@@ -336,116 +365,130 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                   flex: 2,
                                   child: Column(
                                     children: [
-                               Container(
-                                height: 70,
-                                // width: 190,
-                                // color: Colors.white,
-                                decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
-                                child: TextField(
-                                  maxLines: 2,
-                               controller: splitinController,
-                                onChanged: (value){
-                                    setState(() {
-                                      dineIn.setSplitInPersons(double.parse(value));
-                                      double splitInPersonsCash = totalPrice.totalTax! / double.parse(value);
-                                      dineIn.setSplit(splitInPersonsCash);
-                                    });
-                                },
-                                decoration: InputDecoration(
-                                  isDense: false,
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
+                                      Container(
+                                          height: 70,
+                                          // width: 190,
+                                          // color: Colors.white,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16)),
+                                          child: TextField(
+                                            maxLines: 2,
+                                            controller: splitinController,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                dineIn.setSplitInPersons(
+                                                    double.parse(value));
+                                                double splitInPersonsCash =
+                                                    totalPrice.totalTax! /
+                                                        double.parse(value);
+                                                dineIn.setSplit(
+                                                    splitInPersonsCash);
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                isDense: false,
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.black,
+                                                      width: 2),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.grey.shade900,
+                                                      width: 2.0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                labelStyle: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.black),
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey.shade700,
+                                                    fontSize: 15),
+                                                // icon: Icon(Icons.mail),
+                                                hintText: 'No of person',
+                                                labelText: 'Split in',
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.grey.shade900,
+                                                      width: 2),
+                                                )),
+                                            style: TextStyle(
                                               color: Colors.black,
-                                              width: 2),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        labelStyle: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.black),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontSize: 15),
-                                        // icon: Icon(Icons.mail),                                          
-                                        hintText: 'No of person',
-                                        labelText: 'Split in',
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          borderSide: BorderSide(
-                                              color: Colors.grey.shade900,
-                                              width: 2),
-                                        )),
-                                          style:TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        keyboardType:TextInputType.number,
-   
-                                )),
-                                    SizedBox(height:8),
-                                        Container(
-                       
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                          )),
+                                      SizedBox(height: 8),
+                                      Container(
                                         height: 70,
                                         decoration: BoxDecoration(
-
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
                                         child: TextField(
                                           maxLines: 2,
-                                    controller: voucherController,
-                                  onChanged: (value){
+                                          controller: voucherController,
+                                          onChanged: (value) {
                                             setState(() {
-                                              dineIn.setVoucher(double.parse(value));
+                                              dineIn.setVoucher(
+                                                  double.parse(value));
                                             });
-                                  },
-                                  decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 2),
-                                          ),
-                                          focusedBorder:OutlineInputBorder(
-                                            borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          labelStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black),
-                                          hintStyle: TextStyle(
-                                              color: Colors.grey.shade700,
-                                              fontSize: 15),
-                                          // icon: Icon(Icons.mail),                                          
-                                          hintText: 'Enter Voucher',
-                                          labelText: 'Voucher',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade900,
-                                                width: 2),
-                                          )),
-                                          style:TextStyle(
+                                          },
+                                          decoration: InputDecoration(
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                    color: Colors.black,
+                                                    width: 2),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey.shade900,
+                                                    width: 2.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              labelStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black),
+                                              hintStyle: TextStyle(
+                                                  color: Colors.grey.shade700,
+                                                  fontSize: 15),
+                                              // icon: Icon(Icons.mail),
+                                              hintText: 'Enter Voucher',
+                                              labelText: 'Voucher',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey.shade900,
+                                                    width: 2),
+                                              )),
+                                          style: TextStyle(
                                             color: Colors.black,
                                           ),
-                                          keyboardType:TextInputType.number,
-                                  ),
-                                    ),
-                                    SizedBox(height:8),
-                                                      
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+
                                       GestureDetector(
-                                        onTap: (){
+                                        onTap: () {
                                           dialogBox();
                                         },
-                                        child: payNowBox(
-                                            "Reedem Points", Icons.point_of_sale),
+                                        child: payNowBox("Reedem Points",
+                                            Icons.point_of_sale),
                                       ),
                                       SizedBox(
                                         height: 8,
@@ -455,14 +498,13 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                       //   height: 8,
                                       // ),
                                       Container(
-
                                         height: 70,
                                         decoration: BoxDecoration(
-
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
                                         child: TextField(
-                                          onChanged: (value){
+                                          onChanged: (value) {
                                             setState(() {
                                               dineIn.setNotes(value);
                                               print(dineIn.notes);
@@ -472,14 +514,17 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                           decoration: InputDecoration(
                                               enabledBorder: OutlineInputBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(16),
+                                                    BorderRadius.circular(16),
                                                 borderSide: BorderSide(
                                                     color: Colors.black,
                                                     width: 2),
                                               ),
-                                              focusedBorder:OutlineInputBorder(
-                                                borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                                borderRadius: BorderRadius.circular(16),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey.shade900,
+                                                    width: 2.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
                                               ),
                                               labelStyle: TextStyle(
                                                   fontSize: 20,
@@ -492,12 +537,12 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                               labelText: 'Notes',
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(16),
+                                                    BorderRadius.circular(16),
                                                 borderSide: BorderSide(
                                                     color: Colors.grey.shade900,
                                                     width: 2),
                                               )),
-                                          style:TextStyle(
+                                          style: TextStyle(
                                             color: Colors.black,
                                           ),
                                         ),
@@ -506,33 +551,42 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                         height: 8,
                                       ),
                                       Container(
-
                                         height: 70,
                                         decoration: BoxDecoration(
-
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(16)),
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
                                         child: TextField(
-                                          onChanged: (value){
+                                          onChanged: (value) {
                                             setState(() {
-                                              dineIn.setDiscount(double.parse(value));
-                                              double finalDiscountprice = totalPrice.totalTax! * double.parse(value)/100;
-                                              double finalDiscount = totalPrice.totalTax! - finalDiscountprice;
-                                              dineIn.setfinalDiscount(finalDiscount);
+                                              dineIn.setDiscount(
+                                                  double.parse(value));
+                                              double finalDiscountprice =
+                                                  totalPrice.totalTax! *
+                                                      double.parse(value) /
+                                                      100;
+                                              double finalDiscount =
+                                                  totalPrice.totalTax! -
+                                                      finalDiscountprice;
+                                              dineIn.setfinalDiscount(
+                                                  finalDiscount);
                                             });
                                           },
                                           maxLines: 2,
                                           decoration: InputDecoration(
                                               enabledBorder: OutlineInputBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(16),
+                                                    BorderRadius.circular(16),
                                                 borderSide: BorderSide(
                                                     color: Colors.black,
                                                     width: 2),
                                               ),
-                                              focusedBorder:OutlineInputBorder(
-                                                borderSide:  BorderSide(color: Colors.grey.shade900, width: 2.0),
-                                                borderRadius: BorderRadius.circular(16),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey.shade900,
+                                                    width: 2.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
                                               ),
                                               labelStyle: TextStyle(
                                                   fontSize: 20,
@@ -545,12 +599,12 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                               labelText: 'Discount',
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(16),
+                                                    BorderRadius.circular(16),
                                                 borderSide: BorderSide(
                                                     color: Colors.grey.shade900,
                                                     width: 2),
                                               )),
-                                          style:TextStyle(
+                                          style: TextStyle(
                                             color: Colors.black,
                                           ),
                                         ),
@@ -558,7 +612,6 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                       SizedBox(
                                         height: 8,
                                       ),
-                                    
                                     ],
                                   ),
                                 ),
@@ -570,7 +623,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                     child: Column(children: [
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           dialkeyPayment("1"),
                                           dialkeyPayment("2"),
@@ -583,7 +636,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           dialkeyPayment("4"),
                                           dialkeyPayment("5"),
@@ -596,7 +649,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           dialkeyPayment("7"),
                                           dialkeyPayment("8"),
@@ -609,7 +662,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           dialkeyPayment("+/-"),
                                           dialkeyPayment("0"),
@@ -621,14 +674,13 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                         height: 8,
                                       ),
                                       Container(
-                                          width: MediaQuery.of(context)
-                                              .size
-                                              .width,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           height: 70,
                                           decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
-                                              BorderRadius.circular(16)),
+                                                  BorderRadius.circular(16)),
                                           child: Center(
                                             child: Text(
                                               "C",
@@ -637,39 +689,38 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                                   fontSize: 20),
                                             ),
                                           )),
-                                          SizedBox(
+                                      SizedBox(
                                         height: 8,
                                       ),
-                                      
                                     ])),
-                                  
                               ],
-                            )
-                            ),
-                              GestureDetector(
-                                onTap: (){
-                                  dialogBox3();
-                                },
-                                child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                                color: Colors.blue[100],
-                                                borderRadius:
-                                                BorderRadius.circular(16)),
-                                            child: Center(
-                                              child: Text(
-                                                "Order Now",
-                                                style: TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 25,
-                                                    fontWeight:FontWeight.bold,)
-                                              ),
-                                            )),
-                              )
- 
+                            )),
+                        GestureDetector(
+                          onTap: () {
+                            dialogBox3();
+                            // print(
+                            //     'selecttttttttttttttttttttttttttttttttttttttttttttttt${selectedItems[1].foodName}');
+                            // print(
+                            //     'aaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccc'selectedItems.join('').toString());
+                            // String? mItems = '';
+                            // List<String> itemlist;
+                            // for (int i = 0; i < selectedItems.length; i++) {}
+                          },
+                          child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius: BorderRadius.circular(16)),
+                              child: Center(
+                                child: Text("Order Now",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                              )),
+                        )
                       ],
                     ),
                   ),
@@ -690,6 +741,23 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                 padding: const EdgeInsets.only(top: 20),
                                 child: Text(
                                   "Payment Method",
+                                  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  ///
                                   style: TextStyle(
                                       color: Colors.grey[600], fontSize: 20),
                                 ),
@@ -697,130 +765,267 @@ class _PayNowScreenState extends State<PayNowScreen> {
                               SizedBox(
                                 height: 40,
                               ),
-                              Wrap(
-                                spacing: 10.0,
-                                runSpacing: 10,
-                                children: [
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("PayPal");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
+                              Expanded(
+                                  child: FutureBuilder(
+                                      future: getProductsByCat(),
+                                      builder: (context, snapshot) {
+                                        return GridView.builder(
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 1),
+                                          shrinkWrap: true,
+                                          itemCount: catProductList.length,
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0,
+                                                  left: 10,
+                                                  right: 10),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  // dineIn.setPaymentMethod(
+                                                  //     "PayPal");
+                                                  // print(dineIn.paymentMethod);
+                                                  // setState(() {});
+                                                },
+                                                child: Container(
+                                                  // width: 300,
+                                                  height: 80,
+                                                  width: 70,
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.grey[100],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                      border: Border.all(
+                                                          color: Colors.grey)),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            6.0),
+                                                    child: Center(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Container(
+                                                            height: 80,
+                                                            child:
+                                                                Image.network(
+                                                              'https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}',
+                                                            ),
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    top: 15.0),
+                                                            child: Container(
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              color:
+                                                                  Colors.white,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                  catProductList[
+                                                                          index]
+                                                                      .name
+                                                                      .toString(),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          18),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      })),
 
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "PayPal", Icons.local_atm_outlined,
-                                      dineIn.paymentMethod == "PayPal" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "PayPal" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("Payoneer");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "Payoneer", Icons.credit_card,
-                                      dineIn.paymentMethod == "Payoneer" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "Payoneer" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("Saudi National");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "Saudi National", Icons.local_atm_outlined,
-                                      dineIn.paymentMethod == "Saudi National" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "Saudi National" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("SABB");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "SABB", Icons.credit_card,
-                                      dineIn.paymentMethod == "SABB" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "SABB" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("Alinma");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "Alinma", Icons.local_atm_outlined,
-                                      dineIn.paymentMethod == "Alinma" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "Alinma" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("Riyad");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "Riyad", Icons.credit_card,
-                                      dineIn.paymentMethod == "Riyad" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "Riyad" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("AlJazira");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "AlJazira", Icons.local_atm_outlined,
-                                    dineIn.paymentMethod == "AlJazira" ? Colors.blue.shade300 : Colors.white,
-                                    dineIn.paymentMethod == "AlJazira" ? Colors.blue : Colors.black54,)
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("AlBilad");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "AlBilad", Icons.credit_card,
-                                      dineIn.paymentMethod == "AlBilad" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "AlBilad" ? Colors.blue : Colors.black54,),
-                                  ),
-                                  GestureDetector(
-                                    onTap: (){
-                                      dineIn.setPaymentMethod("Al Rajhi");
-                                      print(dineIn.paymentMethod);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: pamentMethodBox(
-                                        "Al Rajhi", Icons.local_atm_outlined,
-                                      dineIn.paymentMethod == "Al Rajhi" ? Colors.blue.shade300 : Colors.white,
-                                      dineIn.paymentMethod == "Al Rajhi" ? Colors.blue : Colors.black54,),
-                                  ),
-                                ],
-                              ),
-
+                              // Wrap(
+                              //   spacing: 10.0,
+                              //   runSpacing: 10,
+                              //   children: [
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("PayPal");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "PayPal",
+                              //         Icons.local_atm_outlined,
+                              //         dineIn.paymentMethod == "PayPal"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "PayPal"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("Payoneer");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "Payoneer",
+                              //         Icons.credit_card,
+                              //         dineIn.paymentMethod == "Payoneer"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "Payoneer"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("Saudi National");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "Saudi National",
+                              //         Icons.local_atm_outlined,
+                              //         dineIn.paymentMethod == "Saudi National"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "Saudi National"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("SABB");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "SABB",
+                              //         Icons.credit_card,
+                              //         dineIn.paymentMethod == "SABB"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "SABB"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("Alinma");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "Alinma",
+                              //         Icons.local_atm_outlined,
+                              //         dineIn.paymentMethod == "Alinma"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "Alinma"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("Riyad");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "Riyad",
+                              //         Icons.credit_card,
+                              //         dineIn.paymentMethod == "Riyad"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "Riyad"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //         onTap: () {
+                              //           dineIn.setPaymentMethod("AlJazira");
+                              //           print(dineIn.paymentMethod);
+                              //           setState(() {});
+                              //         },
+                              //         child: pamentMethodBox(
+                              //           "AlJazira",
+                              //           Icons.local_atm_outlined,
+                              //           dineIn.paymentMethod == "AlJazira"
+                              //               ? Colors.blue.shade300
+                              //               : Colors.white,
+                              //           dineIn.paymentMethod == "AlJazira"
+                              //               ? Colors.blue
+                              //               : Colors.black54,
+                              //         )),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("AlBilad");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "AlBilad",
+                              //         Icons.credit_card,
+                              //         dineIn.paymentMethod == "AlBilad"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "AlBilad"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         dineIn.setPaymentMethod("Al Rajhi");
+                              //         print(dineIn.paymentMethod);
+                              //         setState(() {});
+                              //       },
+                              //       child: pamentMethodBox(
+                              //         "Al Rajhi",
+                              //         Icons.local_atm_outlined,
+                              //         dineIn.paymentMethod == "Al Rajhi"
+                              //             ? Colors.blue.shade300
+                              //             : Colors.white,
+                              //         dineIn.paymentMethod == "Al Rajhi"
+                              //             ? Colors.blue
+                              //             : Colors.black54,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ]),
                       ),
                     ),
@@ -853,8 +1058,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
       // width: 300,
       height: 70,
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16)),
+          color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Center(
         child: ListTile(
             leading: Icon(
@@ -869,9 +1073,10 @@ class _PayNowScreenState extends State<PayNowScreen> {
     );
   }
 
-
-  Widget pamentMethodBox(String text, IconData icon, Color boxColor, Color borderColor) {
-    final dineIn = Provider.of<DineInProvider>(context, listen: false).paymentMethod;
+  Widget pamentMethodBox(
+      String text, IconData icon, Color boxColor, Color borderColor) {
+    final dineIn =
+        Provider.of<DineInProvider>(context, listen: false).paymentMethod;
     return Container(
       // width: 300,
       height: 70,
@@ -879,8 +1084,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
       decoration: BoxDecoration(
           color: boxColor,
           borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: borderColor)
-      ),
+          border: Border.all(color: borderColor)),
       child: Padding(
         padding: const EdgeInsets.all(6.0),
         child: Center(
@@ -965,11 +1169,13 @@ class _PayNowScreenState extends State<PayNowScreen> {
                   ),
                   Divider(),
                   GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PayNowScreen()));
+                                builder: (context) => PayNowScreen(
+                                      customerName: customername.toString(),
+                                    )));
                       },
                       child: Text(
                         "Dine in",
@@ -1016,37 +1222,33 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey),
                 ),
-                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                  TextButton(
-                        child: Text('No'),
-                        style: TextButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: Colors.blue[300],
-                          onSurface: Colors.grey,
-                        ),
-                        onPressed: () {
-                          print('Pressed');
-                        },
+                    TextButton(
+                      child: Text('No'),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: Colors.blue[300],
+                        onSurface: Colors.grey,
                       ),
-                      
-                                      TextButton(
-                        child: Text('Yes'),
-                        style: TextButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: Colors.blue[300],
-                          onSurface: Colors.grey,
-                        ),
-                        onPressed: () {
-                          print('Pressed');
-                        },
-                      )
+                      onPressed: () {
+                        print('Pressed');
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Yes'),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: Colors.blue[300],
+                        onSurface: Colors.grey,
+                      ),
+                      onPressed: () {
+                        print('Pressed');
+                      },
+                    )
                   ],
                 ),
-                
-
               ],
             ),
           ),
@@ -1056,11 +1258,45 @@ class _PayNowScreenState extends State<PayNowScreen> {
     );
   }
 
-  void dialogBox3() {
+  Future<void> insertOrder() async {}
+
+  void dialogBox3() async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // username = prefs.getString('username');
+    // totalitem = prefs.getString('totalitem');
+
+//  final response = await http.post(Uri.parse("https://api.woga-pos.com/insert_orders.php"),
+//     body: {
+//       'order_id': ,
+//       'customer':customername.toString(),
+//       'dates':DateTime.now().day,
+//       'items':  totalitem,
+//         'quantity': ,
+//         'price':price.totalTax.toString(),
+//         'discount':dineIn.discount,
+//         'voucher':dineIn.voucher,
+//         'points':'99',
+//         'notes':dineIn.notes,
+//         'payments_method':dineIn.paymentMethod,
+//         'users_name':username.toString(),
+//         'times':DateTime.now().hour,
+//         'pay_cash':dineIn.cash,
+//         'pay_card':dineIn.credit,
+//         });
+
+//     if (response.statusCode == 200)
+//       {
+//         print("Success");
+//       }
+//     else{
+//       print("Failed");
+//     }
+
     showDialog(
       builder: (BuildContext context) {
         final dineIn = Provider.of<DineInProvider>(context);
         final price = Provider.of<TaxProvider>(context);
+
         return Dialog(
           child: Expanded(
             child: Container(
@@ -1161,7 +1397,6 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       ),
                     ],
                   ),
-
                   TextButton(
                     child: Text('OK'),
                     style: TextButton.styleFrom(
@@ -1173,8 +1408,6 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       Navigator.pop(context);
                     },
                   ),
-
-
                 ],
               ),
             ),
@@ -1184,7 +1417,4 @@ class _PayNowScreenState extends State<PayNowScreen> {
       context: context,
     );
   }
-
 }
-
-

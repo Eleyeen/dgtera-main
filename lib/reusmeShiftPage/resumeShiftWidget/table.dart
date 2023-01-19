@@ -99,6 +99,7 @@ class _TableWidgetState extends State<TableWidget> {
                       Container(
                         width: 200,
                         // height: 80,
+
                         decoration: BoxDecoration(
                             color: Colors.grey[500],
                             borderRadius:
@@ -119,13 +120,17 @@ class _TableWidgetState extends State<TableWidget> {
                                     elevation: 16,
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 20,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     underline: Container(
                                       height: 3,
                                       color: Colors.blue,
+                                      child: Text('Select a Floor'),
                                     ),
+                                    // value: dropdownValue == ""
+                                    //     ? "select a floor"
+                                    //     : dropdownValue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         dropdownValue = newValue.toString();
@@ -386,7 +391,7 @@ class _TableWidgetState extends State<TableWidget> {
                                                           FontWeight.bold),
                                                 ),
                                                 Text(
-                                                  "Persons : ${int.parse(tableList[index].people.toString()) + 1}",
+                                                  "Persons : ${int.parse(tableList[index].people.toString())}",
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 20,
@@ -422,7 +427,7 @@ class _TableWidgetState extends State<TableWidget> {
                                                               FontWeight.bold),
                                                     ),
                                                     Text(
-                                                      "Persons : ${int.parse(tableList[index].people.toString()) + 1}",
+                                                      "Persons : ${int.parse(tableList[index].people.toString())}",
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 20,
@@ -451,7 +456,7 @@ class _TableWidgetState extends State<TableWidget> {
                                                               FontWeight.bold),
                                                     ),
                                                     Text(
-                                                      "Persons : ${int.parse(tableList[index].people.toString()) + 1}",
+                                                      "Persons : ${int.parse(tableList[index].people.toString())}",
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 20,

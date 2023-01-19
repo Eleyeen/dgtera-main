@@ -266,7 +266,7 @@ class _AddCostomerState extends State<AddCostomer> {
                           ),
                           child: Center(
                               child: Text(
-                            "Add Costumer",
+                            "Add Custumer",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 25,
