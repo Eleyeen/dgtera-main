@@ -5,6 +5,7 @@ import 'package:dgtera_tablet_app/extra.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/addCostumer.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customerTable.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/product.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -379,17 +380,12 @@ class _CustomerState extends State<Customer> {
                                                   .toString());
                                           print(
                                               'clickkkkkkkkkkkkkkkkk${showCustomerList[index].name.toString()}');
+
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ResumeScreen(
-                                                      customername:
-                                                          showCustomerList[
-                                                                  index]
-                                                              .name
-                                                              .toString(),
-                                                    )),
+                                                    ResumeScreen()),
                                           );
                                         },
                                         child: Row(
@@ -577,13 +573,7 @@ class _CustomerState extends State<Customer> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ResumeScreen(
-                                                      customername:
-                                                          showCustomerList[
-                                                                  index]
-                                                              .name
-                                                              .toString(),
-                                                    )),
+                                                    Product()),
                                           );
                                         },
                                         child: Row(

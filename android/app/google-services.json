@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "337990736294",
+    "project_id": "woga-f6dfc",
+    "storage_bucket": "woga-f6dfc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337990736294:android:ae2a508bd17c44765b1767",
+        "android_client_info": {
+          "package_name": "com.example.dgtera_tablet_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "337990736294-9embc32mkq46g9ofqo2u4vpsb20u3jok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dgtera_tablet_app",
+            "certificate_hash": "7254b5f655d766a47538a6acfbe70cff564046af"
+          }
+        },
+        {
+          "client_id": "337990736294-rqqm2rk0ss49ksc68eqi30lnj5g7geds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8ALYxlDT616lLHdt9I6JcfYrVFjKOB6o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "337990736294-rqqm2rk0ss49ksc68eqi30lnj5g7geds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

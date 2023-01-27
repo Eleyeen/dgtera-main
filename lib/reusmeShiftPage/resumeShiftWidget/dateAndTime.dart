@@ -2,17 +2,40 @@ import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/table.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DateAndTime extends StatefulWidget {
-  const DateAndTime({
-    Key? key,
-  }) : super(key: key);
+  String? tableId;
+  String? floorNum;
+  DateAndTime({Key? key, this.floorNum, this.tableId});
 
   @override
   State<DateAndTime> createState() => _DateAndTimeState();
 }
 
 class _DateAndTimeState extends State<DateAndTime> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+      const Duration(seconds: 4),
+      () {
+        sharedd();
+      },
+    );
+  }
+
+  String? tableid;
+  String? tablenum;
+
+  void sharedd() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      tableid = prefs.getString('tableid');
+      tablenum = prefs.getString('tablenum');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,7 +106,8 @@ class _DateAndTimeState extends State<DateAndTime> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 14),
-                    child: Text(" Table"),
+                    child: Text(
+                        " Table :  ${tableid.toString()} \n Floor :  ${tablenum.toString()}"),
                   )
                 ],
               ),

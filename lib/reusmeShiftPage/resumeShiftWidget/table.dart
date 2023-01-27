@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/Models/TableModel.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/product.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'addTable.dart';
 
 class TableWidget extends StatefulWidget {
@@ -61,8 +65,6 @@ class _TableWidgetState extends State<TableWidget> {
 
   @override
   Widget build(BuildContext context) {
-    getFloor();
-    getTable();
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -359,8 +361,27 @@ class _TableWidgetState extends State<TableWidget> {
                             itemCount: tableList.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                onTap: () {
-                                  print('clickkkkkkkkkkkkkkkkkkkk');
+                                onTap: () async {
+                                  print(
+                                      'clickkkkkkkkkkkkkkkkkkkk${int.parse(index.toString()) + 1}');
+
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setString('tableid',
+                                      '${int.parse(index.toString()) + 1}');
+                                  prefs.setString('tablenum',
+                                      tableList[index].floor.toString());
+
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ResumeScreen(
+                                          tableid:
+                                              '${int.parse(index.toString()) + 1}',
+                                          floornum:
+                                              tableList[index].floor.toString(),
+                                        ),
+                                      ));
                                 },
                                 child: Wrap(
                                   direction: Axis.horizontal,

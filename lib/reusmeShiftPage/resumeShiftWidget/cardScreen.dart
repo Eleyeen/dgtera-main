@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/DB_Helper/db_helper.dart';
 import 'package:dgtera_tablet_app/Models/CatProductModel.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
@@ -11,7 +12,9 @@ import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../Models/TaxModel.dart';
@@ -34,6 +37,23 @@ class _CardScreenState extends State<CardScreen> {
   String size = 'large';
   Item? item;
   bool sizebutton = false;
+  String? tableid;
+  String? tablenum;
+
+  void sharedd() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      tableid = prefs.getString('tableid');
+      tablenum = prefs.getString('tablenum');
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sharedd();
+  }
 
   Widget appBarTitle = Text(
     "My Properties",
@@ -44,7 +64,8 @@ class _CardScreenState extends State<CardScreen> {
     color: Colors.orange,
   );
   TextEditingController noteController = TextEditingController();
-  TextEditingController discountController = TextEditingController();
+  TextEditingController discountController =
+      TextEditingController(text: 0.toInt().toString());
 
   @override
   Widget build(BuildContext context) {
@@ -390,6 +411,31 @@ class _CardScreenState extends State<CardScreen> {
     );
   }
 
+  // uploadData() {
+  //   FirebaseFirestore.instance.collection('items').doc().update({});
+  // }
+
+  void setData(String? totalPrice, String? dis) async {
+    await Firebase.initializeApp();
+    return await FirebaseFirestore.instance.collection('task').doc().set({
+      'itemName': widget.catProductModel.name,
+      'itemQty': itemcount,
+      'itemSize': size,
+      'idIndex': widget.index!,
+      'itemNote': noteController.text,
+      'totalPrice': totalPrice,
+      'itemDiscount': dis,
+      'itemPrice': double.parse(widget.catProductModel.dineprice.toString()),
+      'tableId': '${tableid.toString()}',
+      'floorNum': '${tablenum.toString()}'
+    }).then((value) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (builder) => ResumeScreen()));
+      print(
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    });
+  }
+
   doneButton() {
     print(
         'doneeeeeeeeeeeeeeeeeeeeeee prrrrrrrrrinttttttttttttttttttttttttttttttttttt');
@@ -405,107 +451,115 @@ class _CardScreenState extends State<CardScreen> {
                     itemcount;
             double disPrice = totalPrice * dis / 100;
             double finalPriceWithDiscount = totalPrice - disPrice;
-            dis = finalPriceWithDiscount;
-
-            if (selectedItems.isNotEmpty) {
-              print("existing itemmmmmmmmmmmmmmmmmm in list is $selectedItems");
-              var existingiteminList = selectedItems.firstWhere(
-                  (itemToCheck) =>
-                      itemToCheck.foodName == widget.catProductModel.name,
-                  orElse: () => Item(
-                      id: widget.index!,
-                      foodName: '',
-                      foodPrice: double.parse(
-                          widget.catProductModel.dineprice.toString()),
-                      quantity: itemcount,
-                      note: noteController.text,
-                      discount: dis,
-                      size: size,
-                      totalPrice: totalPrice));
-              print("existing item in list is ${existingiteminList.foodName}");
-              if (existingiteminList.foodName == widget.catProductModel.name) {
-                print(
-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ifffffffffffffffff');
-                setState(() {
-                  selectedItems[widget.index!].discount =
-                      selectedItems[widget.index!].discount! -
-                          selectedItems[widget.index!].discount!;
-                  selectedItems[widget.index!].foodPrice = double.parse(
-                          widget.catProductModel.dineprice.toString()) +
-                      double.parse(
-                          selectedItems[widget.index!].foodPrice.toString());
-                  selectedItems[widget.index!].quantity = itemcount +
-                      int.parse(
-                          selectedItems[widget.index!].quantity.toString());
-                  selectedItems[widget.index!].note = noteController.text;
-
-                  selectedItems[widget.index!].size = size;
-                  selectedItems[widget.index!].totalPrice = totalPrice +
-                      double.parse(
-                          selectedItems[widget.index!].totalPrice.toString());
-                  double discPrice = selectedItems[widget.index!].totalPrice! *
-                      double.parse(discountController.text.toString()) /
-                      100;
-                  double finallPriceWithDiscount =
-                      selectedItems[widget.index!].totalPrice! - discPrice;
-                  dis = finallPriceWithDiscount;
-                  selectedItems[widget.index!].discount = dis;
-                });
-                print('Already exists!');
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (builder) => ResumeScreen()));
-                print(
-                    'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  seconnnnnnnnddddddddddddddddddddddddddddddddd');
-              } else {
-                print(
-                    'Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! elseeeeeeeeeeeee');
-                setState(() async {
-                  selectedItems.add(Item(
-                      id: widget.index!,
-                      foodName: widget.catProductModel.name,
-                      foodPrice: double.parse(
-                          widget.catProductModel.dineprice.toString()),
-                      quantity: itemcount,
-                      note: noteController.text,
-                      discount: dis,
-                      size: size,
-                      totalPrice: totalPrice));
-                  dis = dis! - dis!;
-
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (builder) => ResumeScreen()));
-                });
-              }
-
-              print(
-                  'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  frisssssssssssssssssssssssssttttttttttttt');
+            // dis = finalPriceWithDiscount;
+            // dis = dis - dis;
+            // ignore: unnecessary_null_comparison
+            if (tableid.toString == null) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Select a table"),
+              ));
             } else {
-              print('Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-              selectedItems.forEach((element) {
-                print('adddddd databaseeeeeee');
-                print(element.foodName);
-              });
-
-              print('${widget.catProductModel.name}');
-              setState(() {
-                selectedItems.add(Item(
-                    id: widget.index!,
-                    foodName: widget.catProductModel.name,
-                    foodPrice: double.parse(
-                        widget.catProductModel.dineprice.toString()),
-                    quantity: itemcount,
-                    note: noteController.text,
-                    discount: dis,
-                    size: size,
-                    totalPrice: totalPrice));
-                dis = dis! - dis!;
-
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (builder) => ResumeScreen()));
-              });
-              print(
-                  'doneeeeeeeeeeeeeeeeeee adddddddddddddddddddddddddd elseeeeeeeeeeeeeeeeee   frisssssssssstttttttttttttttttttttt');
+              setData(totalPrice.toString(), dis.toString());
             }
+
+            // if (selectedItems.isNotEmpty) {
+            //   print("existing itemmmmmmmmmmmmmmmmmm in list is $selectedItems");
+            //   var existingiteminList = selectedItems.firstWhere(
+            //       (itemToCheck) =>
+            //           itemToCheck.foodName == widget.catProductModel.name,
+            //       orElse: () => Item(
+            //           id: widget.index!,
+            //           foodName: '',
+            //           foodPrice: double.parse(
+            //               widget.catProductModel.dineprice.toString()),
+            //           quantity: itemcount,
+            //           note: noteController.text,
+            //           discount: dis,
+            //           size: size,
+            //           totalPrice: totalPrice));
+            //   print("existing item in list is ${existingiteminList.foodName}");
+            //   if (existingiteminList.foodName == widget.catProductModel.name) {
+            //     print(
+            //         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ifffffffffffffffff');
+            //     setState(() {
+            //       selectedItems[widget.index!].discount =
+            //           selectedItems[widget.index!].discount! -
+            //               selectedItems[widget.index!].discount!;
+            //       selectedItems[widget.index!].foodPrice = double.parse(
+            //               widget.catProductModel.dineprice.toString()) +
+            //           double.parse(
+            //               selectedItems[widget.index!].foodPrice.toString());
+            //       selectedItems[widget.index!].quantity = itemcount +
+            //           int.parse(
+            //               selectedItems[widget.index!].quantity.toString());
+            //       selectedItems[widget.index!].note = noteController.text;
+            //       selectedItems[widget.index!].size = size;
+            //       selectedItems[widget.index!].totalPrice = totalPrice +
+            //           double.parse(
+            //               selectedItems[widget.index!].totalPrice.toString());
+            //       double discPrice = selectedItems[widget.index!].totalPrice! *
+            //           double.parse(discountController.text.toString()) /
+            //           100;
+            //       double finallPriceWithDiscount =
+            //           selectedItems[widget.index!].totalPrice! - discPrice;
+            //       dis = finallPriceWithDiscount;
+            //       selectedItems[widget.index!].discount = dis;
+            //     });
+            //     print('Already exists!');
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: (builder) => ResumeScreen()));
+            //     print(
+            //         'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  seconnnnnnnnddddddddddddddddddddddddddddddddd');
+            //   } else {
+            //     print(
+            //         'Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! elseeeeeeeeeeeee');
+            //     setState(() async {
+            //       selectedItems.add(Item(
+            //           id: widget.index!,
+            //           foodName: widget.catProductModel.name,
+            //           foodPrice: double.parse(
+            //               widget.catProductModel.dineprice.toString()),
+            //           quantity: itemcount,
+            //           note: noteController.text,
+            //           discount: dis,
+            //           size: size,
+            //           totalPrice: totalPrice));
+            //       dis = dis! - dis!;
+
+            //       Navigator.push(context,
+            //           MaterialPageRoute(builder: (builder) => ResumeScreen()));
+            //     });
+            //   }
+
+            //   print(
+            //       'doneeeeeeeeeeeeeeeeeeeeeee adddddddddddddddddd iffffffffffffffffffffffff  frisssssssssssssssssssssssssttttttttttttt');
+            // } else {
+            //   print('Added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            //   selectedItems.forEach((element) {
+            //     print('adddddd databaseeeeeee');
+            //     print(element.foodName);
+            //   });
+
+            //   print('${widget.catProductModel.name}');
+            //   setState(() {
+            //     selectedItems.add(Item(
+            //         id: widget.index!,
+            //         foodName: widget.catProductModel.name,
+            //         foodPrice: double.parse(
+            //             widget.catProductModel.dineprice.toString()),
+            //         quantity: itemcount,
+            //         note: noteController.text,
+            //         discount: dis,
+            //         size: size,
+            //         totalPrice: totalPrice));
+            //     dis = dis! - dis!;
+
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: (builder) => ResumeScreen()));
+            //   });
+            //   print(
+            //       'doneeeeeeeeeeeeeeeeeee adddddddddddddddddddddddddd elseeeeeeeeeeeeeeeeee   frisssssssssstttttttttttttttttttttt');
+            // }
           },
           child: Container(
             height: 60,

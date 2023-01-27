@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/Models/InsertOrder.dart';
 import 'package:dgtera_tablet_app/Provider/DineInProvider.dart';
 import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
@@ -36,7 +37,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
     color: Colors.orange,
   );
 
-  String? customername;
+  String? cutomerName;
   String? username;
   String? totalitem;
 
@@ -50,13 +51,36 @@ class _PayNowScreenState extends State<PayNowScreen> {
 
   var data1;
   List<PaymentModel> catProductList = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    shareddd();
+  }
+
+  String? tableid;
+  String? tablenum;
+  String? totalPrices;
+
+  void shareddd() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      tableid = prefs.getString('tableid');
+      tablenum = prefs.getString('tablenum');
+      cutomerName = prefs.getString('nameCus');
+      totalPrices = prefs.getString('totalPriceItem');
+    });
+    print('aaaaaasddsddsdsdsdsdd resume screen ${totalPrices.toString()}');
+  }
+
+  double sum = 0.0;
+  Future totalP(String? totalP) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('totalPriceItem', totalP.toString());
+  }
 
   Future<List<PaymentModel>> getProductsByCat() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    customername = prefs.getString('nameCus');
-    print(
-        "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss${customername}");
-
     final response =
         await get(Uri.parse('https://api.woga-pos.com/payment_methods.php'));
     // final response =
@@ -140,9 +164,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                 child: Column(
                                   children: [
                                     Text("Customer"),
-                                    customername == ""
-                                        ? Text('select a customer')
-                                        : Text(customername.toString()),
+                                    Text(cutomerName.toString()),
                                   ],
                                 ),
                               )
@@ -210,19 +232,18 @@ class _PayNowScreenState extends State<PayNowScreen> {
                     child: Column(
                       children: [
                         Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Center(
-                              child: Text(
-                            "$totalPr. SAR",
-                            style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold),
-                          )),
-                        ),
+                            height: 80,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Center(
+                                child: Text(
+                              "${totalPrices.toString()}. SAR",
+                              style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),
+                            ))),
                         SizedBox(
                           height: 20,
                         ),
@@ -1173,9 +1194,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PayNowScreen(
-                                      customerName: customername.toString(),
-                                    )));
+                                builder: (context) => PayNowScreen()));
                       },
                       child: Text(
                         "Dine in",
@@ -1404,7 +1423,32 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       backgroundColor: Colors.blue[300],
                       onSurface: Colors.grey,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                      // FirebaseFirestore.instance
+                      //     .collection('messages')
+                      //     .where('tableId', isEqualTo: tableid)
+                      //     .where('floorNum', isEqualTo: tablenum)
+                      //     .get()
+                      //     .then((snapshot) {
+                      //   for (var doc in snapshot.docs) {
+                      //     doc.reference.delete();
+                      //     print(
+                      //         'jjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkk${doc.reference.toString()}');
+                      //   }
+                      // });
+
+                      var collection = FirebaseFirestore.instance
+                          .collection('task')
+                          .where('tableId', isEqualTo: tableid)
+                          .where('floorNum', isEqualTo: tablenum);
+                      var snapshots = await collection.get();
+                      for (var doc in snapshots.docs) {
+                        await doc.reference.delete();
+
+                        print('${doc.reference.toString()}');
+                      }
+                      totalP('0');
+
                       Navigator.pop(context);
                     },
                   ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/DB_Helper/db_helper.dart';
 import 'package:dgtera_tablet_app/Models/TaxModel.dart';
 import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
@@ -13,53 +14,74 @@ class TotleDetail extends StatefulWidget {
 }
 
 class _TotleDetailState extends State<TotleDetail> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  // double? getpricedetails() {
+  //   double totalprice = 0;
+  //   selectedItems.forEach((element) {
+  //     setState(() {
+  //       totalprice = (totalprice + (element.discount!));
+  //     });
+  //   });
+  //   return totalprice;
+  // }
 
-  double? getpricedetails() {
-    double totalprice = 0;
-    selectedItems.forEach((element) {
-      setState(() {
-        totalprice = (totalprice + (element.discount!));
-      });
-    });
-    return totalprice;
-  }
-
-  String _selectedCategory = '';
+  // String _selectedCategory = '';
 
   // List a = ['a','b','c','d'];
 
+  String? tableid;
+  String? tablenum;
+  double? sumTotal = 0.0;
+  void sharedd() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      tableid = prefs.getString('tableid');
+      tablenum = prefs.getString('tablenum');
+      print('cardDetaillllllllll ${tableid.toString()}');
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sharedd();
+  }
+
+  double sum = 0.0;
+
+  Future totalP(String? totalP) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('totalPriceItem', totalP.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tax = Provider.of<TaxProvider>(context, listen: false);
-    print(tax);
+    // final tax = Provider.of<TaxProvider>(context, listen: false);
+    // print(tax);
 
-    num? totalitems = selectedItems.length;
-    double? totalprice = getpricedetails();
-    double totalPriceTax = 0.0;
-    double finalPrice = 0.0;
-    if (tax.tax == null) {
-      setState(() {
-        tax.setData(0.0);
-      });
-    }
+    // num? totalitems = selectedItems.length;
+    // double? totalprice = getpricedetails();
+    // double totalPriceTax = 0.0;
+    // double finalPrice = 0.0;
+    // if (tax.tax == null) {
+    //   setState(() {
+    //     tax.setData(0.0);
+    //   });
+    // }
 
-    void totalitem() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('totalitem', totalitems.toString());
-    }
+    // void totalitem() async {
+    //   SharedPreferences prefs = await SharedPreferences.getInstance();
+    //   prefs.setString('totalitem', totalitems.toString());
+    // }
 
-    if (tax.tax != 0.0) {
-      setState(() {
-        totalPriceTax = totalprice! / tax.tax!;
-        finalPrice = totalPriceTax + totalprice;
+    // if (tax.tax != 0.0) {
+    //   setState(() {
+    //     totalPriceTax = totalprice! / tax.tax!;
+    //     finalPrice = totalPriceTax + totalprice;
 
-        tax.setTax(finalPrice);
-      });
-    }
+    //     tax.setTax(finalPrice);
+    //   });
+    // }
 
     return SingleChildScrollView(
       child: Container(
@@ -80,13 +102,77 @@ class _TotleDetailState extends State<TotleDetail> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Text("Total ($totalitems items)",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Colors.grey[600])),
+                    Container(
+                        height: 350,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16))),
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("task")
+                                .where('tableId', isEqualTo: tableid)
+                                .where('floorNum', isEqualTo: tablenum)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting &&
+                                  snapshot.data == null) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return Text(
+                                    "Total (${snapshot.data?.docs.length} items)",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                        color: Colors.grey[600]));
+                              }
+                            })),
                     Spacer(),
-                    Text("$totalprice",
+                    GestureDetector(
+                      child: Container(
+                        width: 200,
+                        child: FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('task')
+                              .where('tableId', isEqualTo: tableid)
+                              .where('floorNum', isEqualTo: tablenum)
+                              .get(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text("Something went wrong");
+                            }
+                        
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              snapshot.data!.docs.forEach((doc) {
+                                //                            double value = doc["totalPrice"];
+                                // sumTotal += value!;
+                                // test = doc["totalPrice"].toString();
+                                // print(
+                                //     'tototootototototototototoototototot${sumTotal}');
+                                
+                                sumTotal = (double.parse(doc["totalPrice"]) +
+                                    sumTotal!); // make sure you create the variable sumTotal somewhere
+                                totalP(sumTotal.toString());
+                              });
+                              return Text(
+                                  "Sum of all sells:${sumTotal.toString()}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[600]));
+                            }
+
+                            return Text("loading");
+                          },
+                        ),
+                      ),
+                    ),
+                    Text("jj",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -129,7 +215,6 @@ class _TotleDetailState extends State<TotleDetail> {
             //                   setState(() {
             //                     _selectedCategory = newValue.toString();
             //                     print(_selectedCategory);
-
             //                   });
             //                 },
             //                 items: a.map((catagory) {
@@ -146,7 +231,6 @@ class _TotleDetailState extends State<TotleDetail> {
             //            */ /* }
             //           }),*/ /*
             //     )),*/
-
             //           Row(
             //         children: [
             //           Text("Tax : ",
@@ -171,7 +255,6 @@ class _TotleDetailState extends State<TotleDetail> {
             //                   color: Colors.grey[600])),
             //         ],
             //       ),
-
             //     )),
 
             Divider(),

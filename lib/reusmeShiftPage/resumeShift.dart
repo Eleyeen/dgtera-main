@@ -10,13 +10,19 @@ import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
 import 'package:dgtera_tablet_app/widgets/global.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResumeScreen extends StatefulWidget {
   Item? item;
   String? customername;
+  String? tableid;
+  String? floornum;
+
   ResumeScreen({
     Key? key,
     this.customername,
+    this.tableid,
+    this.floornum,
     this.item,
   }) : super(key: key);
   @override
@@ -38,9 +44,26 @@ class _ResumeScreenState extends State<ResumeScreen> {
   void initState() {
     getpricedetails();
     super.initState();
+    // Future.delayed(
+    //   const Duration(seconds: 4),
+    //   () {
+    //     sharedd();
+    //   },
+    // );
+    sharedd();
   }
 
-  getpricedetails() {
+  String? cutomerName;
+
+  void sharedd() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      cutomerName = prefs.getString('nameCus');
+    });
+    print('aaaaaasddsddsdsdsdsdd resume screen ${cutomerName.toString()}');
+  }
+
+  getpricedetails() async {
     selectedItems.forEach((element) {
       setState(() {
         totalPriceItem = totalPriceItem! + element.foodPrice!;
@@ -69,17 +92,18 @@ class _ResumeScreenState extends State<ResumeScreen> {
             width: MediaQuery.of(context).size.width - 850,
             child: Column(
               children: [
-                widget.customername.toString() == ""
-                    ? CustomerTable()
-                    : CustomerTable(
-                        customerName: widget.customername.toString() == ""
-                            ? "select a customer"
-                            : widget.customername.toString(),
-                      ),
+                CustomerTable(
+                  customerName: cutomerName.toString(),
+                ),
                 SizedBox(
                   height: 6,
                 ),
-                DateAndTime(),
+                widget.tableid.toString == ""
+                    ? DateAndTime()
+                    : DateAndTime(
+                        tableId: widget.tableid.toString(),
+                        floorNum: widget.floornum.toString(),
+                      ),
                 SizedBox(
                   height: 6,
                 ),

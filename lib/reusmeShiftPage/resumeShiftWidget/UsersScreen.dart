@@ -4,6 +4,7 @@ import 'package:dgtera_tablet_app/Models/LoginPinModel.dart';
 import 'package:dgtera_tablet_app/Models/ShowCustomerModel.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/addCostumer.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/addUser.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/customer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -64,7 +65,7 @@ class _UserScreenState extends State<UserScreen> {
       if (data != null) {
         print('Customer Update Successfully');
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ResumeScreen()));
+            context, MaterialPageRoute(builder: (context) => UserScreen()));
         return "ok";
       } else if (data == null) {
         print("Failed");
@@ -244,10 +245,10 @@ class _UserScreenState extends State<UserScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (builder) => AddCostomer()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (builder) => AddUsersScreen()));
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -386,13 +387,7 @@ class _UserScreenState extends State<UserScreen> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ResumeScreen(
-                                                      customername:
-                                                          showCustomerList[
-                                                                  index]
-                                                              .name
-                                                              .toString(),
-                                                    )),
+                                                    ResumeScreen()),
                                           );
                                         },
                                         child: Row(
@@ -580,13 +575,7 @@ class _UserScreenState extends State<UserScreen> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ResumeScreen(
-                                                      customername:
-                                                          showCustomerList[
-                                                                  index]
-                                                              .name
-                                                              .toString(),
-                                                    )),
+                                                    ResumeScreen()),
                                           );
                                         },
                                         child: Row(
@@ -751,6 +740,21 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
+  String _userManager = "Manager";
+  String get userManager => _userManager;
+
+  void setUserManager(String userManager) {
+    _userManager = userManager;
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      DropdownMenuItem(child: Text("Manager"), value: "Manager"),
+      DropdownMenuItem(child: Text("Cashier"), value: "Cashier"),
+    ];
+    return menuItems;
+  }
+
   void dialogBox(String? customerid, String? username, String? userRole,
       String? userPass) {
     showDialog(
@@ -802,29 +806,51 @@ class _UserScreenState extends State<UserScreen> {
                           ),
                         ),
                       ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Container(
+                      //     width: MediaQuery.of(context).size.width,
+                      //     height: 50,
+                      //     decoration: BoxDecoration(color: Colors.white),
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.only(left: 8, top: 12),
+                      //       child: TextFormField(
+                      //         // controller: _takePriceController,
+                      //         onChanged: (value) {
+                      //           setState(() {
+                      //             _phoneController.text = value;
+                      //           });
+                      //         },
+                      //         decoration: InputDecoration(
+                      //           hintText: userRole,
+                      //           focusedBorder: UnderlineInputBorder(
+                      //             borderSide: BorderSide(color: Colors.black),
+                      //           ),
+                      //         ),
+                      //         style:
+                      //             TextStyle(fontSize: 20, color: Colors.black),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 10),
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 50,
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 12),
-                            child: TextFormField(
-                              // controller: _takePriceController,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              iconEnabledColor: Colors.purple,
+                              iconDisabledColor: Colors.black,
+                              isExpanded: true,
+                              value: userManager,
+                              items: dropdownItems,
                               onChanged: (value) {
                                 setState(() {
-                                  _phoneController.text = value;
+                                  setUserManager(value.toString());
                                 });
                               },
-                              decoration: InputDecoration(
-                                hintText: userRole,
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                              ),
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.black),
                             ),
                           ),
                         ),
@@ -871,7 +897,7 @@ class _UserScreenState extends State<UserScreen> {
                     customerUpdate(
                         customerid.toString(),
                         _nameController.text.trim(),
-                        _phoneController.text.trim(),
+                        userManager.toString(),
                         _addressController.text.trim());
                     Future.delayed(
                       const Duration(seconds: 4),

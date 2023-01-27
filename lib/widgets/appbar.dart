@@ -22,7 +22,7 @@ class AppBarScreen extends StatefulWidget with PreferredSizeWidget {
 class _AppBarScreenState extends State<AppBarScreen> {
   Future<void> insertUserLog() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? logintime = prefs.getString('logintime');
+    String? logintime = prefs.getString('nameCus');
     String? username = prefs.getString('username');
 
     print('usernameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee${username}');

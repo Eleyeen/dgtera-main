@@ -13,11 +13,32 @@ class CustomerTable extends StatefulWidget {
 }
 
 class _CustomerTableState extends State<CustomerTable> {
- 
+  String? cutomerName;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(
+      const Duration(seconds: 4),
+      () {
+        shared();
+      },
+    );
+  }
+
+  void shared() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      cutomerName = prefs.getString('nameCus');
+    });
+    print(
+        'aaaaaaaaaaaaaaaasssssssssssssssddddddddddd customer tabele screeen${cutomerName.toString()}');
+  }
 
   @override
   Widget build(BuildContext context) {
+   
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -46,9 +67,7 @@ class _CustomerTableState extends State<CustomerTable> {
                       child: Column(
                         children: [
                           Text("Customer"),
-                          widget.customerName.toString() == ""
-                              ? Text('select a customer')
-                              : Text(widget.customerName.toString()),
+                          Text(cutomerName.toString()),
                         ],
                       ),
                     )
