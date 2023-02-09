@@ -45,7 +45,10 @@ class _CardDetailState extends State<CardDetail> {
   }
 
   bodyy() {
-    return Container(
+    List<String>? list;
+
+    return 
+    Container(
         height: 350,
         decoration: BoxDecoration(
             color: Colors.white,
@@ -68,6 +71,12 @@ class _CardDetailState extends State<CardDetail> {
                     itemCount: snapshot.data?.docs.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot data = snapshot.data!.docs[index];
+                      // for (int i = 0; snapshot.data?.docs.length != null; i++) {
+                      //   list = snapshot.data!.docs[index]['floorNum'];
+                      //   print('sahsshhshshshshbdhsbdhsbhdbshdb ${list}');
+                      // }
+                      // list = snapshot.data!.docs[index]['floorNum'];
+                      // print('sahsshhshshshshbdhsbdhsbhdbshdb ${list}');
 
                       count++;
                       return Card(
@@ -416,5 +425,10 @@ class _CardDetailState extends State<CardDetail> {
                 ),
               );
             }));
+  }
+
+  Future saveSPUserLog(String? totalItemss) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('totalItems', totalItemss.toString());
   }
 }

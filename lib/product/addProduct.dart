@@ -47,6 +47,10 @@ class _AddProductState extends State<AddProduct> {
   String _selectedCategory = '';
   String _selectedCategoryTax = '';
   String _selectedCategoryUnit = '';
+  String? vat = '';
+  String? cat = '';
+  String? unitOfMeasure;
+  String? totalPrice;
 
   Future getImage() async {
     final pickedFile =
@@ -84,10 +88,12 @@ class _AddProductState extends State<AddProduct> {
     request.fields['stock_in_hand'] = _stockController.text.trim();
     request.fields['category_id'] = _selectedCategory.toString();
     request.fields['barcode'] = _barCodeController.text.trim();
-    request.fields['dineprice'] = _dinePriceController.text.trim();
+    request.fields['dineprice'] = totalPrice == null
+        ? _dinePriceController.text.trim()
+        : totalPrice.toString();
     request.fields['takeawayprice'] = _takePriceController.text.trim();
     request.fields['vat'] = _selectedCategoryTax.toString();
-    ;
+
     request.fields['img1'] = base64Image.toString();
     request.fields['unitofmeasure'] = _selectedCategoryUnit.toString();
     request.fields['description'] = _descController.text.trim();
@@ -287,7 +293,9 @@ class _AddProductState extends State<AddProduct> {
                               hint: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  'Select Category',
+                                  cat == ''
+                                      ? "Select Category"
+                                      : '${catList[int.parse(cat!) - 2].name}',
                                   style: TextStyle(
                                       color: Colors.grey[500],
                                       fontSize: 16,
@@ -304,6 +312,7 @@ class _AddProductState extends State<AddProduct> {
                                   _selectedCategory = newValue.toString();
                                   print(newValue);
                                   print("sassssssssss" + _selectedCategory);
+                                  cat = newValue.toString();
                                 });
                               },
                               items: catList.map((catagory) {
@@ -440,7 +449,9 @@ class _AddProductState extends State<AddProduct> {
                               hint: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "VAT (%)",
+                                  vat == ''
+                                      ? "VAT (%)"
+                                      : '${catListTax[int.parse(vat!) - 1].name}',
                                   style: TextStyle(
                                       color: Colors.grey[500],
                                       fontSize: 16,
@@ -448,7 +459,6 @@ class _AddProductState extends State<AddProduct> {
                                       decoration: TextDecoration.none),
                                 ),
                               ), // Not necessary for Option 1
-                              // value: 'Fruits',
                               // value: _selectedCategory.toString() == ''
                               //     ? 'Search By Category'
                               //     : _selectedCategory,
@@ -457,6 +467,7 @@ class _AddProductState extends State<AddProduct> {
                                   _selectedCategoryTax = newValue.toString();
                                   print(newValue);
                                   print("sassssssssss" + _selectedCategoryTax);
+                                  vat = newValue.toString();
                                 });
                               },
                               items: catListTax.map((catagory) {
@@ -487,7 +498,7 @@ class _AddProductState extends State<AddProduct> {
                               setState(() {
                                 excluded = index.toString();
 
-                                print(index);
+                                print(totalPrice);
                               });
                             }),
                         Text(
@@ -505,6 +516,13 @@ class _AddProductState extends State<AddProduct> {
                               setState(() {
                                 excluded = index.toString();
                                 print(index);
+                                int? org = int.tryParse(
+                                    _dinePriceController.text.trim());
+                                int vatInt = int.parse(
+                                    '${catListTax[int.parse(vat!) - 1].name}');
+
+                                totalPrice = '${org! + (org * (vatInt) / 100)}';
+                                print('$totalPrice');
                               });
                             }),
                         Text(

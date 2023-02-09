@@ -427,7 +427,8 @@ class _CardScreenState extends State<CardScreen> {
       'itemDiscount': dis,
       'itemPrice': double.parse(widget.catProductModel.dineprice.toString()),
       'tableId': '${tableid.toString()}',
-      'floorNum': '${tablenum.toString()}'
+      'floorNum': '${tablenum.toString()}',
+      'orderComplete': ''
     }).then((value) {
       Navigator.push(
           context, MaterialPageRoute(builder: (builder) => ResumeScreen()));

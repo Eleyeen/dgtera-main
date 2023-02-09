@@ -174,12 +174,37 @@ class _ProductDetailsState extends State<ProductDetails> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 18.0 / 11.0,
-                                    child: Image.network(
-                                      'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
-                                      fit: BoxFit.scaleDown,
-                                    ),
+                                  Stack(
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 18.0 / 11.0,
+                                        child: Image.network(
+                                          'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
+                                          fit: BoxFit.scaleDown,
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topRight,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              right: 10, top: 10),
+                                          child: allProductList[index]
+                                                      .stockInHand
+                                                      .toString() ==
+                                                  'null'
+                                              ? Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  color: Colors.red,
+                                                )
+                                              : Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  color: Colors.transparent,
+                                                ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   Padding(
                                     padding:

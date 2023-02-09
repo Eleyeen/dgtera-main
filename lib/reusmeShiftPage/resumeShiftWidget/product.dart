@@ -178,6 +178,8 @@ class _ProductState extends State<Product> {
     );
   }
 
+  String? cat = '';
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -233,7 +235,9 @@ class _ProductState extends State<Product> {
                                 hint: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Search By Category',
+                                    cat == ''
+                                        ? "Select Category"
+                                        : '${catList[int.parse(cat!) - 2].name}',
                                     style: TextStyle(
                                         color: Colors.grey[500],
                                         fontSize: 16,
@@ -241,18 +245,13 @@ class _ProductState extends State<Product> {
                                         decoration: TextDecoration.none),
                                   ),
                                 ), // Not necessary for Option 1
-                                // value: 'Fruits',
-                                // value: _selectedCategory.toString() == ''
-                                //     ? 'Search By Category'
-                                //     : _selectedCategory,
+
                                 onChanged: (newValue) {
                                   setState(() {
                                     _selectedCategory = newValue.toString();
+                                    cat = newValue.toString();
                                     print(newValue);
                                     print("sassssssssss" + _selectedCategory);
-                                    print('lengggggg${catProductList.length}');
-                                    print(
-                                        'lengggggppppppppppppppppppppppppppg${catProductList.length}');
                                   });
                                 },
                                 items: catList.map((catagory) {
@@ -376,13 +375,46 @@ class _ProductState extends State<Product> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          AspectRatio(
-                                            aspectRatio: 18.0 / 11.0,
-                                            child: Image.network(
-                                              'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
-                                              fit: BoxFit.scaleDown,
-                                            ),
+                                          Stack(
+                                            children: [
+                                              AspectRatio(
+                                                aspectRatio: 18.0 / 11.0,
+                                                child: Image.network(
+                                                  'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
+                                                  fit: BoxFit.scaleDown,
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10, top: 10),
+                                                  child: allProductList[index]
+                                                              .stockInHand
+                                                              .toString() ==
+                                                          'null'
+                                                      ? Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors.red,
+                                                        )
+                                                      : Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                ),
+                                              )
+                                            ],
                                           ),
+                                          // AspectRatio(
+                                          //   aspectRatio: 18.0 / 11.0,
+                                          //   child: Image.network(
+                                          //     'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
+                                          //     fit: BoxFit.scaleDown,
+                                          //   ),
+                                          // ),
                                           Padding(
                                             padding: EdgeInsets.fromLTRB(
                                                 10.0, 10, 0.0, 0.0),
@@ -475,12 +507,38 @@ class _ProductState extends State<Product> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          AspectRatio(
-                                            aspectRatio: 18.0 / 11.0,
-                                            child: Image.network(
-                                              "https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}",
-                                              fit: BoxFit.scaleDown,
-                                            ),
+                                          Stack(
+                                            children: [
+                                              AspectRatio(
+                                                aspectRatio: 18.0 / 11.0,
+                                                child: Image.network(
+                                                  'https://woga-pos.com/uploads/products/${allProductList[index].image.toString()}',
+                                                  fit: BoxFit.scaleDown,
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10, top: 10),
+                                                  child: allProductList[index]
+                                                              .stockInHand
+                                                              .toString() ==
+                                                          'null'
+                                                      ? Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors.red,
+                                                        )
+                                                      : Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                ),
+                                              )
+                                            ],
                                           ),
                                           Padding(
                                             padding: EdgeInsets.fromLTRB(
@@ -573,13 +631,46 @@ class _ProductState extends State<Product> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          AspectRatio(
-                                            aspectRatio: 18.0 / 11.0,
-                                            child: Image.network(
-                                              "https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}",
-                                              fit: BoxFit.scaleDown,
-                                            ),
+                                          Stack(
+                                            children: [
+                                              AspectRatio(
+                                                aspectRatio: 18.0 / 11.0,
+                                                child: Image.network(
+                                                  'https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}',
+                                                  fit: BoxFit.scaleDown,
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10, top: 10),
+                                                  child: allProductList[index]
+                                                              .stockInHand
+                                                              .toString() ==
+                                                          'null'
+                                                      ? Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors.red,
+                                                        )
+                                                      : Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                ),
+                                              )
+                                            ],
                                           ),
+                                          // AspectRatio(
+                                          //   aspectRatio: 18.0 / 11.0,
+                                          //   child: Image.network(
+                                          //     "https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}",
+                                          //     fit: BoxFit.scaleDown,
+                                          //   ),
+                                          // ),
                                           Padding(
                                             padding: EdgeInsets.fromLTRB(
                                                 10.0, 10, 0.0, 0.0),
@@ -672,13 +763,46 @@ class _ProductState extends State<Product> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          AspectRatio(
-                                            aspectRatio: 18.0 / 11.0,
-                                            child: Image.network(
-                                              "https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}",
-                                              fit: BoxFit.scaleDown,
-                                            ),
+                                          Stack(
+                                            children: [
+                                              AspectRatio(
+                                                aspectRatio: 18.0 / 11.0,
+                                                child: Image.network(
+                                                  'https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}',
+                                                  fit: BoxFit.scaleDown,
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10, top: 10),
+                                                  child: allProductList[index]
+                                                              .stockInHand
+                                                              .toString() ==
+                                                          'null'
+                                                      ? Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors.red,
+                                                        )
+                                                      : Container(
+                                                          width: 15,
+                                                          height: 15,
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                ),
+                                              )
+                                            ],
                                           ),
+                                          // AspectRatio(
+                                          //   aspectRatio: 18.0 / 11.0,
+                                          //   child: Image.network(
+                                          //     "https://woga-pos.com/uploads/products/${catProductList[index].image.toString()}",
+                                          //     fit: BoxFit.scaleDown,
+                                          //   ),
+                                          // ),
                                           Padding(
                                             padding: EdgeInsets.fromLTRB(
                                                 10.0, 10, 0.0, 0.0),

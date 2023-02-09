@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/Models/InsertOrder.dart';
 import 'package:dgtera_tablet_app/Provider/DineInProvider.dart';
 import 'package:dgtera_tablet_app/Provider/tax_provider.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShift.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/cardDetail.dart';
+import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/testModel.dart';
 import 'package:dgtera_tablet_app/reusmeShiftPage/resumeShiftWidget/totleDetail.dart';
 import 'package:dgtera_tablet_app/widgets/appbar.dart';
 import 'package:dgtera_tablet_app/widgets/drawer.dart';
@@ -42,6 +44,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
   String? totalitem;
 
   TextEditingController cashpriceController = TextEditingController();
+  TextEditingController discountpriceController = TextEditingController();
   TextEditingController creditpriceController = TextEditingController();
   TextEditingController splitinController = TextEditingController();
   TextEditingController voucherController = TextEditingController();
@@ -62,6 +65,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
   String? tableid;
   String? tablenum;
   String? totalPrices;
+  String? usersname;
 
   void shareddd() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -70,6 +74,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
       tablenum = prefs.getString('tablenum');
       cutomerName = prefs.getString('nameCus');
       totalPrices = prefs.getString('totalPriceItem');
+      usersname = prefs.getString('username');
     });
     print('aaaaaasddsddsdsdsdsdd resume screen ${totalPrices.toString()}');
   }
@@ -270,9 +275,11 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                           dineIn.setCash(double.parse(value));
                                           print(
                                               "current if cash is  ${dineIn.cash}");
-                                          double creditPrice =
-                                              totalPrice.totalTax! -
-                                                  dineIn.cash!.toDouble();
+                                          double creditPrice = double.parse(
+                                                  totalPrices.toString()) -
+                                              double.parse(cashpriceController
+                                                  .text
+                                                  .trim());
                                           print(creditPrice);
                                           dineIn.setCredit(creditPrice);
                                         } else {
@@ -578,6 +585,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(16)),
                                         child: TextField(
+                                          controller: discountpriceController,
                                           onChanged: (value) {
                                             setState(() {
                                               dineIn.setDiscount(
@@ -804,10 +812,13 @@ class _PayNowScreenState extends State<PayNowScreen> {
                                                   right: 10),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  // dineIn.setPaymentMethod(
-                                                  //     "PayPal");
-                                                  // print(dineIn.paymentMethod);
-                                                  // setState(() {});
+                                                  dineIn.setPaymentMethod(
+                                                    catProductList[index]
+                                                        .name
+                                                        .toString(),
+                                                  );
+                                                  print(dineIn.paymentMethod);
+                                                  setState(() {});
                                                 },
                                                 child: Container(
                                                   // width: 300,
@@ -1311,6 +1322,20 @@ class _PayNowScreenState extends State<PayNowScreen> {
 //       print("Failed");
 //     }
 
+    double creditt;
+    double sum;
+    double sumDis;
+    double totaDis;
+    double totalPpr = double.parse(totalPrices.toString());
+    double discountt = double.parse(splitinController.text.toString());
+    double cashh = double.parse(cashpriceController.text.trim());
+    double discountAmount = double.parse(discountpriceController.text.trim());
+
+    sumDis = totalPpr * discountAmount / 100;
+    totaDis = totalPpr - sumDis;
+    sum = totaDis / discountt;
+    creditt = totalPpr - cashh;
+
     showDialog(
       builder: (BuildContext context) {
         final dineIn = Provider.of<DineInProvider>(context);
@@ -1335,7 +1360,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
                   Column(
                     children: [
                       Text(
-                        "Price :  ${price.totalTax}",
+                        "Price :  ${totalPrices.toString()}",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16,
@@ -1343,19 +1368,19 @@ class _PayNowScreenState extends State<PayNowScreen> {
                             color: Colors.grey),
                       ),
                       Text(
-                        "Cash :  ${dineIn.cash}",
+                        "Total Discount :  ${dineIn.discount}%",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w900,
                             color: Colors.grey),
                       ),
                       Text(
-                        "Credit :  ${dineIn.credit}",
+                        "Total Discount Price :  ${totaDis}",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w900,
                             color: Colors.grey),
                       ),
                       Text(
@@ -1367,7 +1392,31 @@ class _PayNowScreenState extends State<PayNowScreen> {
                             color: Colors.grey),
                       ),
                       Text(
-                        "Per Person :  ${dineIn.split}",
+                        "Per Person :  ${sum}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                      ),
+                      Text(
+                        "Cash :  ${cashh}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                      ),
+                      Text(
+                        "Payment Method :  ${dineIn.paymentMethod}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                      ),
+                      Text(
+                        "Credit :  ${creditt}",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16,
@@ -1390,30 +1439,6 @@ class _PayNowScreenState extends State<PayNowScreen> {
                             fontWeight: FontWeight.bold,
                             color: Colors.grey),
                       ),
-                      Text(
-                        "Payment Method :  ${dineIn.paymentMethod}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                      ),
-                      Text(
-                        "Total Discount :  ${dineIn.discount}%",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                      ),
-                      Text(
-                        "Total Discount Price :  ${dineIn.finalDiscount}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.grey),
-                      ),
                     ],
                   ),
                   TextButton(
@@ -1424,32 +1449,103 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       onSurface: Colors.grey,
                     ),
                     onPressed: () async {
-                      // FirebaseFirestore.instance
-                      //     .collection('messages')
+                      final List<ModelT> clientList = <ModelT>[];
+                      final QuerySnapshot<Map<String, dynamic>> snapshot =
+                          await FirebaseFirestore.instance
+                              .collection('task')
+                              .where('tableId', isEqualTo: tableid)
+                              .where('floorNum', isEqualTo: tablenum)
+                              .get();
+                      final List<ModelT> result = snapshot.docs
+                          .map((QueryDocumentSnapshot<Map<String, dynamic>>
+                                  doc) =>
+                              ModelT.fromJson(doc.data()))
+                          .toList();
+                      clientList.addAll(result);
+                      var concatenate = StringBuffer();
+
+                      clientList.forEach((item) {
+                        concatenate.write(item);
+                      });
+
+                      String stringList = json.encode(clientList);
+
+                      // List<String> productsList;
+                      // final List<DocumentSnapshot> documents =
+                      //     (await FirebaseFirestore.instance
+                      //             .collection('task')
+                      //             .where('tableId', isEqualTo: tableid)
+                      //             .where('floorNum', isEqualTo: tablenum)
+                      //             .get())
+                      //         .docs;
+                      // productsList = documents
+                      //     .map(
+                      //       (documentSnapshot) =>
+                      //           documentSnapshot['itemName' ]
+                      //               as String,
+                      //     )
+                      //     .toList();
+                      // List<DocumentSnapshot> datas = <DocumentSnapshot>[];
+                      // QuerySnapshot snap = await FirebaseFirestore.instance
+                      //     .collection("task")
                       //     .where('tableId', isEqualTo: tableid)
                       //     .where('floorNum', isEqualTo: tablenum)
-                      //     .get()
-                      //     .then((snapshot) {
-                      //   for (var doc in snapshot.docs) {
-                      //     doc.reference.delete();
-                      //     print(
-                      //         'jjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkk${doc.reference.toString()}');
-                      //   }
-                      // });
+                      //     .get();
+                      // datas.addAll(snap.docs);
+                      // String? stringList = clientList.join("");
 
-                      var collection = FirebaseFirestore.instance
-                          .collection('task')
-                          .where('tableId', isEqualTo: tableid)
-                          .where('floorNum', isEqualTo: tablenum);
-                      var snapshots = await collection.get();
-                      for (var doc in snapshots.docs) {
-                        await doc.reference.delete();
+                      // print(
+                      //     'hsdbjabsdjbasjdbbashs${datas[0]['idIndex'].toString()}');
 
-                        print('${doc.reference.toString()}');
+                      Response resposne = await post(
+                          Uri.parse(
+                              'https://api.woga-pos.com/insert_orders.php'),
+                          body: {
+                            'customer': '${cutomerName.toString()}',
+                            'dates': '${DateTime.now().toString()}',
+                            'items': '${concatenate}',
+                            'quantity': '${clientList.length}',
+                            'price': '${totaDis.toString()}',
+                            'discount': '${dineIn.discount.toString()}',
+                            'voucher': '${dineIn.voucher.toString()}',
+                            'points': 'null',
+                            'notes ': '${dineIn.notes}',
+                            'payments_method': '${dineIn.paymentMethod}',
+                            'users_name': '${usersname}',
+                            'times': '${DateTime.now().toString()}',
+                            'pay_cash': '${cashh.toString()}',
+                            'pay_card': '${creditt.toString()}'
+
+                            // 'order_id': '1',
+                            // 'customer': cutomerName.toString(),
+                            // 'dates': DateTime.now().toString(),
+                            // 'items': stringList,
+                            // 'quantity': 'test app',
+                            // 'price': totaDis.toString(),
+                            // 'discount': dineIn.discount.toString(),
+                            // 'voucher ': dineIn.voucher.toString(),
+                            // 'points ': '',
+                            // 'notes ': dineIn.notes.toString(),
+                            // 'payments_method': 'test app',
+                            // 'users_name': usersname.toString(),
+                            // 'times ': DateTime.now().toString(),
+                            // 'pay_cash ': cashh.toString(),
+                            // 'pay_card': creditt.toString(),
+                          }).then((value) {
+                        print('Customer Update Successfully');
+                        delete();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ResumeScreen()));
+                        return value;
+                      });
+                      if (resposne.statusCode == 200) {
+                        print(resposne.body);
+                        print("orderrrr inserted successfully");
+                      } else {
+                        print("oderrrr not inserted");
                       }
-                      totalP('0');
-
-                      Navigator.pop(context);
                     },
                   ),
                 ],
@@ -1460,5 +1556,36 @@ class _PayNowScreenState extends State<PayNowScreen> {
       },
       context: context,
     );
+  }
+
+  Future<List> getListOfProducts() async {
+    List<String> productsList;
+    final List<DocumentSnapshot> documents = (await FirebaseFirestore.instance
+            .collection('task')
+            .where('tableId', isEqualTo: tableid)
+            .where('floorNum', isEqualTo: tablenum)
+            .get())
+        .docs;
+    productsList = documents
+        .map(
+          (documentSnapshot) =>
+              documentSnapshot['itemName']['itemNote'] as String,
+        )
+        .toList();
+    return productsList;
+  }
+
+  void delete() async {
+    var collection = FirebaseFirestore.instance
+        .collection('task')
+        .where('tableId', isEqualTo: tableid)
+        .where('floorNum', isEqualTo: tablenum);
+    var snapshots = await collection.get();
+    for (var doc in snapshots.docs) {
+      await doc.reference.delete();
+
+      print('${doc.reference.toString()}');
+    }
+    totalP('0');
   }
 }

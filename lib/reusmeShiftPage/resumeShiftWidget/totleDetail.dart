@@ -150,11 +150,6 @@ class _TotleDetailState extends State<TotleDetail> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               snapshot.data!.docs.forEach((doc) {
-                                //                            double value = doc["totalPrice"];
-                                // sumTotal += value!;
-                                // test = doc["totalPrice"].toString();
-                                // print(
-                                //     'tototootototototototototoototototot${sumTotal}');
                                 
                                 sumTotal = (double.parse(doc["totalPrice"]) +
                                     sumTotal!); // make sure you create the variable sumTotal somewhere
