@@ -1,8 +1,3 @@
-/// id : "1"
-/// name : "pizza"
-/// created_at : "2022-01-21 04:44:34"
-/// updated_at : "2022-01-21\n04:44:34"
-
 class ModelT {
   ModelT({
     String? name,

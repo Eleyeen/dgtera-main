@@ -10,6 +10,8 @@ import 'dart:async';
 
 import 'package:http/http.dart';
 
+import '../Models/LoginPinModel.dart';
+
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
@@ -19,32 +21,33 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen>
     with SingleTickerProviderStateMixin {
-  List<DropdownMenuItem<String>> get dropdownItems {
-    List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Session",
-              style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-          value: "Session"),
-      DropdownMenuItem(child: Text("User1"), value: "User1"),
-      DropdownMenuItem(child: Text("User2"), value: "User2"),
-      DropdownMenuItem(child: Text("User3"), value: "User3"),
-      DropdownMenuItem(child: Text("User4"), value: "User4"),
-      DropdownMenuItem(child: Text("User5"), value: "User5"),
-    ];
-    return menuItems;
-  }
-
-  String selectedValue = "Session";
-
   DateTime selectedDate = DateTime.now();
+
+  DateTime selectedDate1 = DateTime.now();
+  late TabController _controller;
+  String? _chosenValue;
+
+  var data2;
+  List<OrderAllModel> allProductList = [];
+
+  String _selectUserName = '';
+  LoginPinModel? _selectedUser;
+
+  List<LoginPinModel> usersList = [];
+
+  int count = 0;
+  int indexx = 0;
+  int conTan = 0;
+  double heii = 0;
+  List<int>? resDecode;
+
+  List<dynamic> items = [];
+  List<dynamic> itemsAll = [];
+  List<dynamic> itemsAlluser = [];
+  bool showList = true;
+  bool showListAll = true;
+  var data;
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -55,9 +58,21 @@ class _HistoryScreenState extends State<HistoryScreen>
       setState(() {
         selectedDate = picked;
       });
+
+    print('dateeeeeeeeeeeeeeeeeeeeeeeee ${selectedDate.toString()}');
+
+    filterSearchResultsAll(selectedDate.toString());
+    setState(() {
+      print(itemsAll);
+      // ignore: unrelated_type_equality_checks
+      if (selectedDate == '') {
+        showListAll = false;
+      } else {
+        showListAll = true;
+      }
+    });
   }
 
-  DateTime selectedDate1 = DateTime.now();
   Future<void> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -69,18 +84,6 @@ class _HistoryScreenState extends State<HistoryScreen>
         selectedDate1 = picked;
       });
   }
-
-  late TabController _controller;
-  String? _chosenValue;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = new TabController(length: 2, vsync: this);
-  }
-
-  var data2;
-  List<OrderAllModel> allProductList = [];
 
   Future<List<OrderAllModel>> getAllProducts() async {
     final response =
@@ -98,10 +101,76 @@ class _HistoryScreenState extends State<HistoryScreen>
     }
   }
 
-  int count = 0;
-  int indexx = 0;
-  int conTan = 0;
-  double heii = 0;
+  Future<List<LoginPinModel>> getUser() async {
+    final response =
+        await get(Uri.parse('https://api.woga-pos.com/selectuser.php'));
+    data = jsonDecode(response.body.toString());
+    if (response.statusCode == 200) {
+      usersList.clear();
+      for (Map i in data) {
+        usersList.add(LoginPinModel.fromJson(i));
+      }
+      return usersList;
+    } else {
+      return usersList;
+    }
+  }
+
+  void filterSearchResultsAll(String query) {
+    List<dynamic> dummySearchList = [];
+    dummySearchList.addAll(allProductList.map((e) => e.dates.toString()));
+    if (query.isNotEmpty) {
+      List<dynamic> dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        itemsAll.clear();
+        itemsAll.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        itemsAll.clear();
+        itemsAll.addAll(allProductList);
+      });
+    }
+  }
+
+  void filterSearchResultsUser(String query) {
+    List<dynamic> dummySearchList = [];
+    dummySearchList.addAll(allProductList.map((e) => e.users_name.toString()));
+    if (query.isNotEmpty) {
+      List<dynamic> dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        itemsAlluser.clear();
+        itemsAlluser.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        itemsAlluser.clear();
+        itemsAlluser.addAll(allProductList);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = new TabController(length: 2, vsync: this);
+    setState(() {
+      itemsAll.addAll(allProductList);
+      itemsAlluser.addAll(allProductList);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,23 +293,6 @@ class _HistoryScreenState extends State<HistoryScreen>
                             SizedBox(
                               width: 12,
                             ),
-                            Text(
-                              "Shift:",
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Expanded(
-                              child: Text("1 - 2021-09-02 03:45AM",
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold)),
-                            ),
                           ],
                         ),
                       ),
@@ -248,35 +300,75 @@ class _HistoryScreenState extends State<HistoryScreen>
                   ),
                   Row(
                     children: [
-                      Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          width: MediaQuery.of(context).size.width / 4,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: DropdownButton(
-                            iconEnabledColor: Colors.black,
-                            dropdownColor: Colors.white,
-                            isExpanded: true,
-                            underline: SizedBox(),
+                      FutureBuilder(
+                        future: getUser(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Text(_selectUserName == ''
+                                ? 'Loading'
+                                : _selectUserName);
+                          } else {
+                            return DropdownButton<LoginPinModel>(
+                              hint: Text(_selectUserName == ''
+                                  ? 'Choose User'
+                                  : _selectUserName), // Not necessary for Option 1
+                              // value: _selectedUser.name,
+                              onChanged: (LoginPinModel? newValue) {
+                                setState(() {
+                                  _selectedUser = newValue;
+                                  setState(() {
+                                    _selectUserName = _selectedUser!.name!;
+                                  });
+                                  // _selectUserName = _selectUser
+                                  print(_selectedUser);
+                                  // Navigator.pop(context, true);
+                                });
+                              },
+                              items: usersList.map((LoginPinModel data) {
+                                return DropdownMenuItem<LoginPinModel>(
+                                  enabled: true,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(data.name.toString()),
+                                  ),
+                                  value: data,
+                                );
+                              }).toList(),
+                            );
+                          }
+                        },
+                      ),
 
-                            //elevation: 5,
-                            style: TextStyle(color: Colors.black),
-                            value: selectedValue,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedValue = newValue!;
-                              });
-                            },
-                            items: dropdownItems,
-                            // hint: Align(
-                            //      alignment: Alignment.centerLeft,
-                            //                     child: Text(
-                            //                       "Session",
+                      // Container(
+                      //     padding: EdgeInsets.symmetric(horizontal: 10),
+                      //     width: MediaQuery.of(context).size.width / 4,
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.white,
+                      //         borderRadius: BorderRadius.circular(5)),
+                      //     child: DropdownButton(
+                      //       iconEnabledColor: Colors.black,
+                      //       dropdownColor: Colors.white,
+                      //       isExpanded: true,
+                      //       underline: SizedBox(),
 
-                            //                     ),
-                            //                   ),
-                          )),
+                      //       //elevation: 5,
+                      //       style: TextStyle(color: Colors.black),
+                      //       value: selectedValue,
+                      //       onChanged: (String? newValue) {
+                      //         setState(() {
+                      //           selectedValue = newValue!;
+                      //         });
+                      //       },
+                      //       items: dropdownItems,
+                      //       // hint: Align(
+                      //       //      alignment: Alignment.centerLeft,
+                      //       //                     child: Text(
+                      //       //                       "Session",
+
+                      //       //                     ),
+                      //       //                   ),
+                      //     )),
+
                       // SizedBox(width: 8,),
                       Expanded(
                         child: Container(
@@ -371,274 +463,1129 @@ class _HistoryScreenState extends State<HistoryScreen>
                   //     ),
                   //   ),
                   // ),
+                  _selectUserName == ''
+                      ? showListAll
+                          ? Expanded(
+                              child: FutureBuilder(
+                                  future: getAllProducts(),
+                                  builder: (context, snapshot) {
+                                    return ListView.builder(
+                                      // gridDelegate:
+                                      //     SliverGridDelegateWithFixedCrossAxisCount(
+                                      // crossAxisCount: 1),
+                                      shrinkWrap: true,
+                                      itemCount: allProductList.length,
+                                      itemBuilder: (context, index) {
+                                        count++;
+                                        return Card(
+                                          margin:
+                                              EdgeInsets.fromLTRB(7, 7, 5, 7),
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                indexx = index;
+                                                heii = conTan * 50;
+                                              });
 
-                  Expanded(
-                      child: FutureBuilder(
-                          future: getAllProducts(),
-                          builder: (context, snapshot) {
-                            return ListView.builder(
-                              // gridDelegate:
-                              //     SliverGridDelegateWithFixedCrossAxisCount(
-                              // crossAxisCount: 1),
-                              shrinkWrap: true,
-                              itemCount: allProductList.length,
-                              itemBuilder: (context, index) {
-                                count++;
-                                return Card(
-                                  margin: EdgeInsets.fromLTRB(7, 7, 5, 7),
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        indexx = index;
-                                        heii = conTan * 50;
-                                      });
-
-                                      // print(allProductList[index]
-                                      //     .dineprice
-                                      //     .toString());
-                                      // //add in the list
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (builder) =>
-                                      //             CardScreen(
-                                      //               catProductModel:
-                                      //                   allProductList[index],
-                                      //               index: index,
-                                      //             )));
-                                    },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        // Container(
-                                        //     width: MediaQuery.of(context).size.width,
-                                        //     height: 70,
-                                        //     child: Center(
-                                        //         child: Text(
-                                        //       "Order[2]",
-                                        //       style: TextStyle(
-                                        //         fontWeight: FontWeight.bold,
-                                        //         fontSize: 20,
-                                        //         color: Colors.black
-                                        //       ),
-                                        //     ))),
-                                        // SizedBox(height: 8,),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey,
-                                                      width: 1),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                  color: Colors.white),
-                                              // color: Colors.white,
-                                              height: 70,
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Container(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(left: 8),
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceAround,
-                                                          children: [
-                                                            Text(
-                                                              "ID",
-                                                              style: TextStyle(
-                                                                  fontSize: 20,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                            Text(
-                                                              (index + 1)
-                                                                  .toString(),
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 20,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  VerticalDivider(
-                                                    indent: 20,
-                                                    endIndent: 20,
-                                                    thickness: 2,
-                                                  ),
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceAround,
-                                                      children: [
-                                                        Text(
-                                                          "Title",
-                                                          style: TextStyle(
-                                                              fontSize: 20,
+                                              // print(allProductList[index]
+                                              //     .dineprice
+                                              //     .toString());
+                                              // //add in the list
+                                              // Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (builder) =>
+                                              //             CardScreen(
+                                              //               catProductModel:
+                                              //                   allProductList[index],
+                                              //               index: index,
+                                              //             )));
+                                            },
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                // Container(
+                                                //     width: MediaQuery.of(context).size.width,
+                                                //     height: 70,
+                                                //     child: Center(
+                                                //         child: Text(
+                                                //       "Order[2]",
+                                                //       style: TextStyle(
+                                                //         fontWeight: FontWeight.bold,
+                                                //         fontSize: 20,
+                                                //         color: Colors.black
+                                                //       ),
+                                                //     ))),
+                                                // SizedBox(height: 8,),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
                                                               color:
-                                                                  Colors.grey),
-                                                        ),
-                                                        Text(
-                                                          allProductList[index]
-                                                              .customer
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  Colors.grey),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  VerticalDivider(
-                                                    indent: 20,
-                                                    endIndent: 20,
-                                                    thickness: 2,
-                                                  ),
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Container(
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
+                                                                  Colors.grey,
+                                                              width: 1),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10)),
+                                                          color: Colors.white),
+                                                      // color: Colors.white,
+                                                      height: 70,
+                                                      child: Row(
                                                         children: [
-                                                          Text(
-                                                            "Order",
-                                                            style: TextStyle(
-                                                                fontSize: 20,
-                                                                color: Colors
-                                                                    .grey),
-                                                          ),
-                                                          Text(
-                                                            allProductList[
-                                                                    index]
-                                                                .order_id
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14,
-                                                                color: Colors
-                                                                    .grey),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  VerticalDivider(
-                                                    indent: 20,
-                                                    endIndent: 20,
-                                                    thickness: 2,
-                                                  ),
-                                                  Expanded(
-                                                      flex: 3,
-                                                      child: Container(
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceAround,
-                                                          children: [
-                                                            Text(
-                                                              "Time",
-                                                              style: TextStyle(
-                                                                  fontSize: 20,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                            Text(
-                                                              allProductList[
-                                                                      index]
-                                                                  .times
-                                                                  .toString(),
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      )),
-                                                  VerticalDivider(
-                                                    indent: 20,
-                                                    endIndent: 20,
-                                                    thickness: 2,
-                                                  ),
-                                                  Expanded(
-                                                      flex: 5,
-                                                      child: Container(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  right: 16),
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .end,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceAround,
-                                                            children: [
-                                                              Text(
-                                                                "Totle",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        20,
-                                                                    color: Colors
-                                                                        .grey),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8),
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "ID",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      (index +
+                                                                              1)
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
                                                               ),
-                                                              Text(
-                                                                allProductList[
-                                                                        index]
-                                                                    .price
-                                                                    .toString(),
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    fontSize:
-                                                                        14,
-                                                                    color: Colors
-                                                                        .grey),
-                                                              )
-                                                            ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ))
-                                                ],
-                                              )),
-                                        ),
-                                        Container()
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }))
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                Text(
+                                                                  "Title",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          20,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                Text(
+                                                                  allProductList[
+                                                                          index]
+                                                                      .customer
+                                                                      .toString(),
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                children: [
+                                                                  Text(
+                                                                    "Order",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  ),
+                                                                  Text(
+                                                                    allProductList[
+                                                                            index]
+                                                                        .order_id
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 3,
+                                                              child: Container(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Time",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      allProductList[
+                                                                              index]
+                                                                          .times
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 5,
+                                                              child: Container(
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      right:
+                                                                          16),
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Totle",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      ),
+                                                                      Text(
+                                                                        allProductList[index]
+                                                                            .price
+                                                                            .toString(),
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                        ],
+                                                      )),
+                                                ),
+                                                Container()
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }))
+                          : Expanded(
+                              child: FutureBuilder(
+                                  future: getAllProducts(),
+                                  builder: (context, snapshot) {
+                                    return ListView.builder(
+                                      // gridDelegate:
+                                      //     SliverGridDelegateWithFixedCrossAxisCount(
+                                      // crossAxisCount: 1),
+                                      shrinkWrap: true,
+                                      itemCount: itemsAll.length,
+                                      itemBuilder: (context, index) {
+                                        count++;
+                                        return Card(
+                                          margin:
+                                              EdgeInsets.fromLTRB(7, 7, 5, 7),
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                indexx = index;
+                                                heii = conTan * 50;
+                                              });
+
+                                              // print(allProductList[index]
+                                              //     .dineprice
+                                              //     .toString());
+                                              // //add in the list
+                                              // Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (builder) =>
+                                              //             CardScreen(
+                                              //               catProductModel:
+                                              //                   allProductList[index],
+                                              //               index: index,
+                                              //             )));
+                                            },
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                // Container(
+                                                //     width: MediaQuery.of(context).size.width,
+                                                //     height: 70,
+                                                //     child: Center(
+                                                //         child: Text(
+                                                //       "Order[2]",
+                                                //       style: TextStyle(
+                                                //         fontWeight: FontWeight.bold,
+                                                //         fontSize: 20,
+                                                //         color: Colors.black
+                                                //       ),
+                                                //     ))),
+                                                // SizedBox(height: 8,),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 1),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10)),
+                                                          color: Colors.white),
+                                                      // color: Colors.white,
+                                                      height: 70,
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8),
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "ID",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      (index +
+                                                                              1)
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                Text(
+                                                                  "Title",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          20,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                Text(
+                                                                  itemsAll[
+                                                                          index]
+                                                                      .customer
+                                                                      .toString(),
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                children: [
+                                                                  Text(
+                                                                    "Order",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  ),
+                                                                  Text(
+                                                                    itemsAll[
+                                                                            index]
+                                                                        .order_id
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 3,
+                                                              child: Container(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Time",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      itemsAll[
+                                                                              index]
+                                                                          .times
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 5,
+                                                              child: Container(
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      right:
+                                                                          16),
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Totle",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      ),
+                                                                      Text(
+                                                                        itemsAll[index]
+                                                                            .price
+                                                                            .toString(),
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                        ],
+                                                      )),
+                                                ),
+                                                Container()
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }))
+                      : showList
+                          ? Expanded(
+                              child: FutureBuilder(
+                                  future: getAllProducts(),
+                                  builder: (context, snapshot) {
+                                    return ListView.builder(
+                                      // gridDelegate:
+                                      //     SliverGridDelegateWithFixedCrossAxisCount(
+                                      // crossAxisCount: 1),
+                                      shrinkWrap: true,
+                                      itemCount: allProductList.length,
+                                      itemBuilder: (context, index) {
+                                        count++;
+                                        return Card(
+                                          margin:
+                                              EdgeInsets.fromLTRB(7, 7, 5, 7),
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                indexx = index;
+                                                heii = conTan * 50;
+                                              });
+
+                                              // print(allProductList[index]
+                                              //     .dineprice
+                                              //     .toString());
+                                              // //add in the list
+                                              // Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (builder) =>
+                                              //             CardScreen(
+                                              //               catProductModel:
+                                              //                   allProductList[index],
+                                              //               index: index,
+                                              //             )));
+                                            },
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                // Container(
+                                                //     width: MediaQuery.of(context).size.width,
+                                                //     height: 70,
+                                                //     child: Center(
+                                                //         child: Text(
+                                                //       "Order[2]",
+                                                //       style: TextStyle(
+                                                //         fontWeight: FontWeight.bold,
+                                                //         fontSize: 20,
+                                                //         color: Colors.black
+                                                //       ),
+                                                //     ))),
+                                                // SizedBox(height: 8,),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 1),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10)),
+                                                          color: Colors.white),
+                                                      // color: Colors.white,
+                                                      height: 70,
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8),
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "ID",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      (index +
+                                                                              1)
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                Text(
+                                                                  "Title",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          20,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                Text(
+                                                                  allProductList[
+                                                                          index]
+                                                                      .customer
+                                                                      .toString(),
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                children: [
+                                                                  Text(
+                                                                    "Order",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  ),
+                                                                  Text(
+                                                                    allProductList[
+                                                                            index]
+                                                                        .order_id
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 3,
+                                                              child: Container(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Time",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      allProductList[
+                                                                              index]
+                                                                          .times
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 5,
+                                                              child: Container(
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      right:
+                                                                          16),
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Totle",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      ),
+                                                                      Text(
+                                                                        allProductList[index]
+                                                                            .price
+                                                                            .toString(),
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                        ],
+                                                      )),
+                                                ),
+                                                Container()
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }))
+                          : Expanded(
+                              child: FutureBuilder(
+                                  future: getAllProducts(),
+                                  builder: (context, snapshot) {
+                                    return ListView.builder(
+                                      // gridDelegate:
+                                      //     SliverGridDelegateWithFixedCrossAxisCount(
+                                      // crossAxisCount: 1),
+                                      shrinkWrap: true,
+                                      itemCount: itemsAlluser.length,
+                                      itemBuilder: (context, index) {
+                                        count++;
+                                        return Card(
+                                          margin:
+                                              EdgeInsets.fromLTRB(7, 7, 5, 7),
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                indexx = index;
+                                                heii = conTan * 50;
+                                              });
+
+                                              // print(allProductList[index]
+                                              //     .dineprice
+                                              //     .toString());
+                                              // //add in the list
+                                              // Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (builder) =>
+                                              //             CardScreen(
+                                              //               catProductModel:
+                                              //                   allProductList[index],
+                                              //               index: index,
+                                              //             )));
+                                            },
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                // Container(
+                                                //     width: MediaQuery.of(context).size.width,
+                                                //     height: 70,
+                                                //     child: Center(
+                                                //         child: Text(
+                                                //       "Order[2]",
+                                                //       style: TextStyle(
+                                                //         fontWeight: FontWeight.bold,
+                                                //         fontSize: 20,
+                                                //         color: Colors.black
+                                                //       ),
+                                                //     ))),
+                                                // SizedBox(height: 8,),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 1),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10)),
+                                                          color: Colors.white),
+                                                      // color: Colors.white,
+                                                      height: 70,
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8),
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "ID",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      (index +
+                                                                              1)
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                Text(
+                                                                  "Title",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          20,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                Text(
+                                                                  itemsAlluser[
+                                                                          index]
+                                                                      .customer
+                                                                      .toString(),
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                children: [
+                                                                  Text(
+                                                                    "Order",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  ),
+                                                                  Text(
+                                                                    itemsAlluser[
+                                                                            index]
+                                                                        .order_id
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 3,
+                                                              child: Container(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Time",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
+                                                                    Text(
+                                                                      itemsAlluser[
+                                                                              index]
+                                                                          .times
+                                                                          .toString(),
+                                                                      style: TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                          VerticalDivider(
+                                                            indent: 20,
+                                                            endIndent: 20,
+                                                            thickness: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 5,
+                                                              child: Container(
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      right:
+                                                                          16),
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Totle",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      ),
+                                                                      Text(
+                                                                        itemsAlluser[index]
+                                                                            .price
+                                                                            .toString(),
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                        ],
+                                                      )),
+                                                ),
+                                                Container()
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }))
                 ],
               ),
             ),
@@ -796,6 +1743,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                                         padding: const EdgeInsets.only(
                                             left: 20.0, top: 10, bottom: 10),
                                         child: Text(
+                                          // '${base64.decode(base64.normalize(allProductList[indexx].items!.split(',')[conTan]))}',
+
                                           ' ${allProductList[indexx].items!.split(',')[conTan]}',
                                           style: TextStyle(
                                             fontSize: 15,

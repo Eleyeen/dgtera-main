@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:archive/archive_io.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dgtera_tablet_app/Models/InsertOrder.dart';
 import 'package:dgtera_tablet_app/Provider/DineInProvider.dart';
@@ -42,6 +43,7 @@ class _PayNowScreenState extends State<PayNowScreen> {
   String? cutomerName;
   String? username;
   String? totalitem;
+  String? itemS;
 
   TextEditingController cashpriceController = TextEditingController();
   TextEditingController discountpriceController = TextEditingController();
@@ -1462,14 +1464,15 @@ class _PayNowScreenState extends State<PayNowScreen> {
                               ModelT.fromJson(doc.data()))
                           .toList();
                       clientList.addAll(result);
-                      var concatenate = StringBuffer();
 
-                      clientList.forEach((item) {
-                        concatenate.write(item);
-                      });
-
-                      String stringList = json.encode(clientList);
-
+                      var stringList = json.encode(clientList);
+                      itemS = stringList.toString();
+                      var stringBytes = utf8.encode(itemS.toString());
+                      var gzipBytes = GZipEncoder().encode(stringBytes);
+                      var compressedString = base64.encode(gzipBytes!);
+                      print('shdhsbdjbshdsahdbhjasbdjsabdhbsa ${itemS}');
+                      print(
+                          'compressedStringcompressedStringcompressedStringcompressedStringcompressedString ${compressedString}');
                       // List<String> productsList;
                       // final List<DocumentSnapshot> documents =
                       //     (await FirebaseFirestore.instance
@@ -1497,55 +1500,61 @@ class _PayNowScreenState extends State<PayNowScreen> {
                       // print(
                       //     'hsdbjabsdjbasjdbbashs${datas[0]['idIndex'].toString()}');
 
-                      Response resposne = await post(
-                          Uri.parse(
-                              'https://api.woga-pos.com/insert_orders.php'),
-                          body: {
-                            'customer': '${cutomerName.toString()}',
-                            'dates': '${DateTime.now().toString()}',
-                            'items': '${concatenate}',
-                            'quantity': '${clientList.length}',
-                            'price': '${totaDis.toString()}',
-                            'discount': '${dineIn.discount.toString()}',
-                            'voucher': '${dineIn.voucher.toString()}',
-                            'points': 'null',
-                            'notes ': '${dineIn.notes}',
-                            'payments_method': '${dineIn.paymentMethod}',
-                            'users_name': '${usersname}',
-                            'times': '${DateTime.now().toString()}',
-                            'pay_cash': '${cashh.toString()}',
-                            'pay_card': '${creditt.toString()}'
+                      Future.delayed(
+                        const Duration(seconds: 2),
+                        () async {
+                          Response resposne = await post(
+                              Uri.parse(
+                                  'https://api.woga-pos.com/insert_orders.php'),
+                              body: {
+                                'customer': '${cutomerName.toString()}',
+                                'dates':
+                                    '${DateTime.now().year.toString()}-0${DateTime.now().month.toString()}-${DateTime.now().day.toString()} 00:00:00.000',
+                                'items': '${compressedString}',
+                                'quantity': '${clientList.length}',
+                                'price': '${totaDis.toString()}',
+                                'discount': '${dineIn.discount.toString()}',
+                                'voucher': '${dineIn.voucher.toString()}',
+                                'points': 'null',
+                                'notes ': '${dineIn.notes}',
+                                'payments_method': '${dineIn.paymentMethod}',
+                                'users_name': '${usersname}',
+                                'times': '${DateTime.now().toString()}',
+                                'pay_cash': '${cashh.toString()}',
+                                'pay_card': '${creditt.toString()}'
 
-                            // 'order_id': '1',
-                            // 'customer': cutomerName.toString(),
-                            // 'dates': DateTime.now().toString(),
-                            // 'items': stringList,
-                            // 'quantity': 'test app',
-                            // 'price': totaDis.toString(),
-                            // 'discount': dineIn.discount.toString(),
-                            // 'voucher ': dineIn.voucher.toString(),
-                            // 'points ': '',
-                            // 'notes ': dineIn.notes.toString(),
-                            // 'payments_method': 'test app',
-                            // 'users_name': usersname.toString(),
-                            // 'times ': DateTime.now().toString(),
-                            // 'pay_cash ': cashh.toString(),
-                            // 'pay_card': creditt.toString(),
-                          }).then((value) {
-                        print('Customer Update Successfully');
-                        delete();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ResumeScreen()));
-                        return value;
-                      });
-                      if (resposne.statusCode == 200) {
-                        print(resposne.body);
-                        print("orderrrr inserted successfully");
-                      } else {
-                        print("oderrrr not inserted");
-                      }
+                                // 'order_id': '1',
+                                // 'customer': cutomerName.toString(),
+                                // 'dates': DateTime.now().toString(),
+                                // 'items': stringList,
+                                // 'quantity': 'test app',
+                                // 'price': totaDis.toString(),
+                                // 'discount': dineIn.discount.toString(),
+                                // 'voucher ': dineIn.voucher.toString(),
+                                // 'points ': '',
+                                // 'notes ': dineIn.notes.toString(),
+                                // 'payments_method': 'test app',
+                                // 'users_name': usersname.toString(),
+                                // 'times ': DateTime.now().toString(),
+                                // 'pay_cash ': cashh.toString(),
+                                // 'pay_card': creditt.toString(),
+                              }).then((value) {
+                            print('Customer Update Successfully');
+                            delete();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ResumeScreen()));
+                            return value;
+                          });
+                          if (resposne.statusCode == 200) {
+                            print(resposne.body);
+                            print("orderrrr inserted successfully");
+                          } else {
+                            print("oderrrr not inserted");
+                          }
+                        },
+                      );
                     },
                   ),
                 ],
